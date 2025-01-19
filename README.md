@@ -1,4 +1,4 @@
-# TV-show-navigator
+# Project Name: **TV-show-navigator**
 
 ## Memebers
 
