@@ -2,16 +2,17 @@ package main
 
 import (
 	"database/sql"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
-	"net/http"
 )
 
 var db *sql.DB
 
 func main() {
 	var err error
-	db, err = sql.Open("sqlite3", "./backend/shows.db")
+	db, err = sql.Open("sqlite3", "shows.db")
 	if err != nil {
 		panic(err)
 	}
@@ -20,6 +21,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/shows", getShows)
 	router.GET("/shows/:id", getShow)
+	router.GET("/shows/count", getShowCount)
 	router.Run(":8080")
 }
 
@@ -58,4 +60,18 @@ func getShow(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"tconst": tconst, "title": primaryTitle})
+}
+
+func getShowCount(c *gin.Context) {
+	rows, err := db.Query("SELECT COUNT(*) FROM series")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var count int
+	rows.Next()
+	rows.Scan(&count)
+	c.JSON(http.StatusOK, gin.H{"COUNT": count})
 }
