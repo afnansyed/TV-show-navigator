@@ -1,0 +1,12 @@
+.features-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+  flex-wrap: wrap;
+}
+
+.feature {
+  width: 300px;
+  padding: 20px;
+}
