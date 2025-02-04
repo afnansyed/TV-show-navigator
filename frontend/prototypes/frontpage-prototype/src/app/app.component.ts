@@ -7,10 +7,18 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MATERIAL_IMPORTS, FeaturesComponent, HeroComponent, NavbarComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  imports: [RouterOutlet],
+  //imports: [RouterOutlet, MATERIAL_IMPORTS, FeaturesComponent, HeroComponent, NavbarComponent],
+//  templateUrl: './app.component.html',
+ // styleUrl: './app.component.scss',
+  template: `
+    
+    <router-outlet></router-outlet>
+    `
+
 })
 export class AppComponent {
   title = 'front-end-prototype';
 }
+
+
