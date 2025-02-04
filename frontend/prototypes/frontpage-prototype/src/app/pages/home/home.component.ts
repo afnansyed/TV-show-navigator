@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { MATERIAL_IMPORTS } from '../../material.imports'; 
-import { FeaturesComponent } from '../../components/features/features.component'; 
-import { HeroComponent } from '../../components/hero/hero.component'; 
+import { MATERIAL_IMPORTS } from '../../material.imports';
+import { FeaturesComponent } from '../../components/features/features.component';
+import { HeroComponent } from '../../components/hero/hero.component';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
@@ -12,7 +12,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   template: `
-    
+
   <router-outlet></router-outlet>
   `
 
