@@ -1,11 +1,25 @@
 import { Component } from '@angular/core';
+import { MATERIAL_IMPORTS } from '../../material.imports';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-signup',
-  imports: [],
   templateUrl: './signup.component.html',
-  styleUrl: './signup.component.scss'
+  styleUrl: './signup.component.scss',
+  imports: [CommonModule, MATERIAL_IMPORTS, FormsModule]
 })
 export class SignupComponent {
+  email: string = '';
+  username: string = '';
+  password: string = '';
 
+  onSubmit() {
+    console.log('Email:', this.email);
+    console.log('Username:', this.username);
+    console.log('Password:', this.password);
+  }
 }
+
+
