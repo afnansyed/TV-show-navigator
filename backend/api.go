@@ -21,6 +21,7 @@ func main() {
 
 	router := gin.Default()
 
+	//allow API access to all addresses
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST"},
@@ -29,12 +30,16 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	//list of api endpoints
 	router.GET("/shows", getShows)
 	router.GET("/shows/:id", getShow)
 	router.GET("/shows/count", getShowCount)
+
+	//port to run backend from
 	router.Run(":8080")
 }
 
+// api callback func that queries database for first 10 shows
 func getShows(c *gin.Context) {
 	rows, err := db.Query("SELECT tconst, primaryTitle FROM series LIMIT 10")
 	if err != nil {
@@ -43,6 +48,7 @@ func getShows(c *gin.Context) {
 	}
 	defer rows.Close()
 
+	//create payload to return to client
 	var shows []gin.H
 	for rows.Next() {
 		var tconst string
@@ -57,6 +63,7 @@ func getShows(c *gin.Context) {
 	c.JSON(http.StatusOK, shows)
 }
 
+// api callback func that queries database for show that matches 1 string param
 func getShow(c *gin.Context) {
 	tconst := c.Param("id")
 	var primaryTitle string
@@ -72,6 +79,7 @@ func getShow(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"tconst": tconst, "title": primaryTitle})
 }
 
+// api callback func that queries database for total count of shows
 func getShowCount(c *gin.Context) {
 	rows, err := db.Query("SELECT COUNT(*) FROM series")
 	if err != nil {
