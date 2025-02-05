@@ -41,7 +41,7 @@ func main() {
 
 // api callback func that queries database for first 10 shows
 func getShows(c *gin.Context) {
-	rows, err := db.Query("SELECT tconst, primaryTitle FROM series LIMIT 10")
+	rows, err := db.Query("SELECT tconst, primaryTitle, startYear FROM series LIMIT 10")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -53,11 +53,12 @@ func getShows(c *gin.Context) {
 	for rows.Next() {
 		var tconst string
 		var primaryTitle string
-		if err := rows.Scan(&tconst, &primaryTitle); err != nil {
+		var startYear int
+		if err := rows.Scan(&tconst, &primaryTitle, &startYear); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		shows = append(shows, gin.H{"tconst": tconst, "title": primaryTitle})
+		shows = append(shows, gin.H{"tconst": tconst, "title": primaryTitle, "startYear": startYear})
 	}
 
 	c.JSON(http.StatusOK, shows)
