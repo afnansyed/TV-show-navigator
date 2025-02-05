@@ -36,7 +36,7 @@ func main() {
 }
 
 func getShows(c *gin.Context) {
-	rows, err := db.Query("SELECT tconst, primaryTitle FROM series LIMIT 10")
+	rows, err := db.Query("SELECT tconst, primaryTitle FROM series LIMIT 500")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -21,6 +21,11 @@
 
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+    <mat-paginator  [length]="dataLength"
+                  [pageSizeOptions]="[5, 10, 25]"
+                  showFirstLastButtons
+                  [pageSize]="10">
+
+    </mat-paginator>
   </div>
 </mat-card>
