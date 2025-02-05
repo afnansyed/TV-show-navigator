@@ -34,6 +34,7 @@ func main() {
 	router.GET("/shows", getShows)
 	router.GET("/shows/:id", getShow)
 	router.GET("/shows/count", getShowCount)
+	router.GET("/ratings/best", getBestRating)
 
 	//port to run backend from
 	router.Run(":8080")
@@ -93,4 +94,21 @@ func getShowCount(c *gin.Context) {
 	rows.Next()
 	rows.Scan(&count)
 	c.JSON(http.StatusOK, gin.H{"COUNT": count})
+}
+
+// api callback func that queries database for highest rated show
+func getBestRating(c *gin.Context) {
+	rows, err := db.Query("SELECT * FROM ratings ORDER BY avgRating ASC LIMIT 1")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var tconst string
+	var avgRating float32
+	var votes int
+	rows.Next()
+	rows.Scan(&tconst, &avgRating, &votes)
+	c.JSON(http.StatusOK, gin.H{"tconst": tconst, "avgRating": avgRating, "votes": votes})
 }
