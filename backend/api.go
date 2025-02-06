@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -21,7 +22,7 @@ func main() {
 
 	router := gin.Default()
 
-	//allow API access to all addresses
+	//trust all proxies
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST"},
@@ -40,9 +41,31 @@ func main() {
 	router.Run(":8080")
 }
 
-// api callback func that queries database for first 10 shows
+// api callback func that queries database for show information
 func getShows(c *gin.Context) {
-	rows, err := db.Query("SELECT tconst, primaryTitle, startYear FROM series LIMIT 10")
+	//filter params
+	titleContains := c.DefaultQuery("titleContains", "'*'")
+	isAdult := c.DefaultQuery("isAdult", "(TRUE,FALSE)")
+	genre := c.DefaultQuery("genre", "'*'")                    // types: Comedy, Mystery, Talk-Show, Reality-TV, Musical, Music, Biography, Animation, News, Horror, Western, History, Family, Action, Sci-Fi, Crime, Adventure, Adult, Drama, Sport, Thriller, Game-Show, War, Documentary, Short, Fansary
+	startYearStart := c.DefaultQuery("startYearStart", "1927") // lower bound in dataset
+	startYearEnd := c.DefaultQuery("startYearEnd", "2029")     // upper bound in dataset
+	limit := c.DefaultQuery("limit", "NULL")                   // "LIMIT NULL" means no limit on rows returned
+
+	query := fmt.Sprintf(`
+		SELECT series.tconst, primaryTitle, originalTitle, isAdult, genres, startYear, endYear, runtimeMinues, avgRating, votes
+		FROM series
+		LEFT JOIN ratings
+		ON series.tconst = ratings.tconst
+		WHERE
+		  (Contains(primaryTitle, %s)
+		OR Contains(originalTitle, %s))
+		AND isAdult IN %s
+		AND Contains(genres, %s)
+		AND startYear BETWEEN %s AND %s
+		LIMIT %s
+	`, titleContains, titleContains, isAdult, genre, startYearStart, startYearEnd, limit)
+
+	rows, err := db.Query(query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -54,12 +77,31 @@ func getShows(c *gin.Context) {
 	for rows.Next() {
 		var tconst string
 		var primaryTitle string
+		var originalTitle string
+		var isAdult string
+		var genres string
 		var startYear int
-		if err := rows.Scan(&tconst, &primaryTitle, &startYear); err != nil {
+		var endYear int
+		var runtimeMinutes int
+		var avgRating float32
+		var votes int
+
+		if err := rows.Scan(&tconst, &primaryTitle, &originalTitle, &isAdult, &genres, &startYear, &endYear, &runtimeMinutes, &avgRating, &votes); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		shows = append(shows, gin.H{"tconst": tconst, "title": primaryTitle, "startYear": startYear})
+		shows = append(shows, gin.H{
+			"tconst":         tconst,
+			"title":          primaryTitle,
+			"originalTitle":  originalTitle,
+			"isAdult":        isAdult,
+			"genres":         genres,
+			"startYear":      startYear,
+			"endYear":        endYear,
+			"runtimeMinutes": runtimeMinutes,
+			"avgRating":      avgRating,
+			"votes":          votes,
+		})
 	}
 
 	c.JSON(http.StatusOK, shows)
