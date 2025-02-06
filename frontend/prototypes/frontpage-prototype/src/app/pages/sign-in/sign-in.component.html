@@ -1,0 +1,27 @@
+<mat-toolbar color="primary" class="navbar">
+  <span class="logo">Your Navigator for TV Shows</span>
+  <span class="spacer"></span>
+
+ 
+</mat-toolbar>
+
+
+
+<div class="sign-in-container">
+  <mat-card class="sign-in">
+    <mat-card-title>SIGN IN</mat-card-title>
+      <mat-card-content>
+        <form (ngSubmit)="onSubmit()">
+          <label for="username">Username:</label>
+          <input type="text" id="username" [(ngModel)]="username" name="username" required>
+      
+          <label for="password">Password:</label>
+          <input type="password" id="password" [(ngModel)]="password" name="password" required>
+
+          <button mat-raised-button color="accent" type="submit">Sign In</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  
