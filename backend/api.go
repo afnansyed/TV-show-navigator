@@ -44,25 +44,25 @@ func main() {
 // api callback func that queries database for show information
 func getShows(c *gin.Context) {
 	//filter params
-	titleContains := c.DefaultQuery("titleContains", "'*'")
+	titleContains := c.DefaultQuery("titleContains", "_")
 	isAdult := c.DefaultQuery("isAdult", "(TRUE,FALSE)")
-	genre := c.DefaultQuery("genre", "'*'")                    // types: Comedy, Mystery, Talk-Show, Reality-TV, Musical, Music, Biography, Animation, News, Horror, Western, History, Family, Action, Sci-Fi, Crime, Adventure, Adult, Drama, Sport, Thriller, Game-Show, War, Documentary, Short, Fansary
+	genre := c.DefaultQuery("genre", "_")                      // types: Comedy, Mystery, Talk-Show, Reality-TV, Musical, Music, Biography, Animation, News, Horror, Western, History, Family, Action, Sci-Fi, Crime, Adventure, Adult, Drama, Sport, Thriller, Game-Show, War, Documentary, Short, Fansary
 	startYearStart := c.DefaultQuery("startYearStart", "1927") // lower bound in dataset
 	startYearEnd := c.DefaultQuery("startYearEnd", "2029")     // upper bound in dataset
-	limit := c.DefaultQuery("limit", "NULL")                   // "LIMIT NULL" means no limit on rows returned
+	limit := c.DefaultQuery("limit", "20")                     // "LIMIT NULL" means no limit on rows returned
 
 	query := fmt.Sprintf(`
-		SELECT series.tconst, primaryTitle, originalTitle, isAdult, genres, startYear, endYear, runtimeMinues, avgRating, votes
+		SELECT series.tconst, primaryTitle, originalTitle, isAdult, genres, startYear, endYear, runtimeMinutes, avgRating, votes
 		FROM series
 		LEFT JOIN ratings
 		ON series.tconst = ratings.tconst
 		WHERE
-		  (Contains(primaryTitle, %s)
-		OR Contains(originalTitle, %s))
+		  (primaryTitle LIKE '%%%s%%'
+		OR originalTitle LIKE '%%%s%%')
 		AND isAdult IN %s
-		AND Contains(genres, %s)
+		AND genres LIKE '%%%s%%'
 		AND startYear BETWEEN %s AND %s
-		LIMIT %s
+		LIMIT %s;
 	`, titleContains, titleContains, isAdult, genre, startYearStart, startYearEnd, limit)
 
 	rows, err := db.Query(query)
@@ -83,8 +83,8 @@ func getShows(c *gin.Context) {
 		var startYear int
 		var endYear int
 		var runtimeMinutes int
-		var avgRating float32
-		var votes int
+		var avgRating sql.NullFloat64
+		var votes sql.NullInt32
 
 		if err := rows.Scan(&tconst, &primaryTitle, &originalTitle, &isAdult, &genres, &startYear, &endYear, &runtimeMinutes, &avgRating, &votes); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
