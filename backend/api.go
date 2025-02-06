@@ -45,11 +45,11 @@ func main() {
 func getShows(c *gin.Context) {
 	//filter params
 	titleContains := c.DefaultQuery("titleContains", "_")
-	isAdult := c.DefaultQuery("isAdult", "(TRUE,FALSE)")
+	isAdult := c.DefaultQuery("isAdult", "TRUE,FALSE")
 	genre := c.DefaultQuery("genre", "_")                      // types: Comedy, Mystery, Talk-Show, Reality-TV, Musical, Music, Biography, Animation, News, Horror, Western, History, Family, Action, Sci-Fi, Crime, Adventure, Adult, Drama, Sport, Thriller, Game-Show, War, Documentary, Short, Fansary
 	startYearStart := c.DefaultQuery("startYearStart", "1927") // lower bound in dataset
 	startYearEnd := c.DefaultQuery("startYearEnd", "2029")     // upper bound in dataset
-	limit := c.DefaultQuery("limit", "20")                     // "LIMIT NULL" means no limit on rows returned
+	limit := c.DefaultQuery("limit", "20")                     // LIMIT must have numerical bound on it
 
 	query := fmt.Sprintf(`
 		SELECT series.tconst, primaryTitle, originalTitle, isAdult, genres, startYear, endYear, runtimeMinutes, avgRating, votes
@@ -59,7 +59,7 @@ func getShows(c *gin.Context) {
 		WHERE
 		  (primaryTitle LIKE '%%%s%%'
 		OR originalTitle LIKE '%%%s%%')
-		AND isAdult IN %s
+		AND isAdult IN (%s)
 		AND genres LIKE '%%%s%%'
 		AND startYear BETWEEN %s AND %s
 		LIMIT %s;
