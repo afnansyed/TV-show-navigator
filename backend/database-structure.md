@@ -10,7 +10,7 @@ contains all records for tv shows and series. Convention for null text data to b
   - "runtimeMinutes" : INT : approx runtime of each show, in minutes
   - "startYear" : INT : year the show started airing
   - "endYear" : INT : year the show finished airing
-  - "genres" : TEXT : genre of show
+  - "genres" : TEXT : genre of show. Up to 3 genres, separated by commes (e.g. `Action,Adventure,Romance`)
 - ratings
   - "tconst" : TEXT : unique id for each tv series
   - "avgRating" : FLOAT : average rating of show, out of 10

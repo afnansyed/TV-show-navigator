@@ -46,11 +46,12 @@ func getShows(c *gin.Context) {
 	//filter params
 	titleContains := c.DefaultQuery("titleContains", "_")
 	isAdult := c.DefaultQuery("isAdult", "TRUE,FALSE")
-	genre := c.DefaultQuery("genre", "_")                      // types: Comedy, Mystery, Talk-Show, Reality-TV, Musical, Music, Biography, Animation, News, Horror, Western, History, Family, Action, Sci-Fi, Crime, Adventure, Adult, Drama, Sport, Thriller, Game-Show, War, Documentary, Short, Fansary
+	genre := c.DefaultQuery("genre", "_")                      // types: Comedy, Mystery, Talk-Show, Reality-TV, Musical, Music, Biography, Animation, News, Horror, Western, History, Family, Action, Sci-Fi, Crime, Adventure, Adult, Drama, Sport, Thriller, Game-Show, War, Documentary, Short, Fantasy
 	startYearStart := c.DefaultQuery("startYearStart", "1927") // lower bound in dataset
 	startYearEnd := c.DefaultQuery("startYearEnd", "2029")     // upper bound in dataset
 	limit := c.DefaultQuery("limit", "20")                     // LIMIT must have numerical bound on it
 
+	//assemble query
 	query := fmt.Sprintf(`
 		SELECT series.tconst, primaryTitle, originalTitle, isAdult, genres, startYear, endYear, runtimeMinutes, avgRating, votes
 		FROM series
@@ -65,6 +66,7 @@ func getShows(c *gin.Context) {
 		LIMIT %s;
 	`, titleContains, titleContains, isAdult, genre, startYearStart, startYearEnd, limit)
 
+	//query db
 	rows, err := db.Query(query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -75,16 +77,18 @@ func getShows(c *gin.Context) {
 	//create payload to return to client
 	var shows []gin.H
 	for rows.Next() {
-		var tconst string
-		var primaryTitle string
-		var originalTitle string
-		var isAdult string
-		var genres string
-		var startYear int
-		var endYear int
-		var runtimeMinutes int
-		var avgRating sql.NullFloat64
-		var votes sql.NullInt32
+		var (
+			tconst         string
+			primaryTitle   string
+			originalTitle  string
+			isAdult        string
+			genres         string
+			startYear      int
+			endYear        int
+			runtimeMinutes int
+			avgRating      sql.NullFloat64
+			votes          sql.NullInt32
+		)
 
 		if err := rows.Scan(&tconst, &primaryTitle, &originalTitle, &isAdult, &genres, &startYear, &endYear, &runtimeMinutes, &avgRating, &votes); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
