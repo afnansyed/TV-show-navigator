@@ -36,6 +36,7 @@ func main() {
 	router.GET("/shows/:id", getShow)
 	router.GET("/shows/count", getShowCount)
 	router.GET("/ratings/best", getBestRating)
+	router.GET("/episodes/:parentTconst", getShowEpisodes)
 
 	//port to run backend from
 	router.Run(":8080")
@@ -157,4 +158,53 @@ func getBestRating(c *gin.Context) {
 	rows.Next()
 	rows.Scan(&tconst, &avgRating, &votes)
 	c.JSON(http.StatusOK, gin.H{"tconst": tconst, "avgRating": avgRating, "votes": votes})
+}
+
+// api callback func that queries database for all episodes of a specific show
+func getShowEpisodes(c *gin.Context) {
+    parentTconst := c.Param("parentTconst")
+    
+    // Query to get all episodes for a specific show
+    query := `
+        SELECT tconst, parentTconst, seasonNumber, episodeNumber 
+        FROM episodes 
+        WHERE parentTconst = ?
+        ORDER BY seasonNumber, episodeNumber`
+    
+    rows, err := db.Query(query, parentTconst)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    defer rows.Close()
+
+    // Create payload to return to client
+    var episodes []gin.H
+    for rows.Next() {
+        var (
+            tconst        string
+            parentTconst  string
+            seasonNumber  string
+            episodeNumber string
+        )
+
+        if err := rows.Scan(&tconst, &parentTconst, &seasonNumber, &episodeNumber); err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
+
+        episodes = append(episodes, gin.H{
+            "tconst":        tconst,
+            "parentTconst":  parentTconst,
+            "seasonNumber":  seasonNumber,
+            "episodeNumber": episodeNumber,
+        })
+    }
+
+    if len(episodes) == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"error": "No episodes found for this show"})
+        return
+    }
+
+    c.JSON(http.StatusOK, episodes)
 }
