@@ -167,11 +167,11 @@ func getShowEpisodes(c *gin.Context) {
 
 	// Query to get all episodes for a specific show
 	query := `
-        SELECT tconst, parentTconst, seasonNumber, episodeNumber 
+        SELECT * 
         FROM episodes 
         WHERE parentTconst = ?
-        ORDER BY seasonNumber, episodeNumber`
-
+        ORDER BY seasonNumber, episodeNumber
+	`
 	rows, err := db.Query(query, parentTconst)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -194,12 +194,14 @@ func getShowEpisodes(c *gin.Context) {
 			return
 		}
 
+		//convert value to int datatype
 		seasonNumberInt, err := strconv.Atoi(seasonNumber)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
+		//convert value to int datatype
 		episodeNumberInt, err := strconv.Atoi(episodeNumber)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
