@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -162,49 +163,61 @@ func getBestRating(c *gin.Context) {
 
 // api callback func that queries database for all episodes of a specific show
 func getShowEpisodes(c *gin.Context) {
-    parentTconst := c.Param("parentTconst")
-    
-    // Query to get all episodes for a specific show
-    query := `
+	parentTconst := c.Param("parentTconst")
+
+	// Query to get all episodes for a specific show
+	query := `
         SELECT tconst, parentTconst, seasonNumber, episodeNumber 
         FROM episodes 
         WHERE parentTconst = ?
         ORDER BY seasonNumber, episodeNumber`
-    
-    rows, err := db.Query(query, parentTconst)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    defer rows.Close()
 
-    // Create payload to return to client
-    var episodes []gin.H
-    for rows.Next() {
-        var (
-            tconst        string
-            parentTconst  string
-            seasonNumber  string
-            episodeNumber string
-        )
+	rows, err := db.Query(query, parentTconst)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
 
-        if err := rows.Scan(&tconst, &parentTconst, &seasonNumber, &episodeNumber); err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-            return
-        }
+	// Create payload to return to client
+	var episodes []gin.H
+	for rows.Next() {
+		var (
+			tconst        string
+			parentTconst  string
+			seasonNumber  string
+			episodeNumber string
+		)
 
-        episodes = append(episodes, gin.H{
-            "tconst":        tconst,
-            "parentTconst":  parentTconst,
-            "seasonNumber":  seasonNumber,
-            "episodeNumber": episodeNumber,
-        })
-    }
+		if err := rows.Scan(&tconst, &parentTconst, &seasonNumber, &episodeNumber); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-    if len(episodes) == 0 {
-        c.JSON(http.StatusNotFound, gin.H{"error": "No episodes found for this show"})
-        return
-    }
+		seasonNumberInt, err := strconv.Atoi(seasonNumber)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-    c.JSON(http.StatusOK, episodes)
+		episodeNumberInt, err := strconv.Atoi(episodeNumber)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		episodes = append(episodes, gin.H{
+			"tconst":        tconst,
+			"parentTconst":  parentTconst,
+			"seasonNumber":  seasonNumberInt,
+			"episodeNumber": episodeNumberInt,
+		})
+	}
+
+	if len(episodes) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No episodes found for this show"})
+		return
+	}
+
+	c.JSON(http.StatusOK, episodes)
 }
