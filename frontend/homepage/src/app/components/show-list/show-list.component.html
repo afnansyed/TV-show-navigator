@@ -1,0 +1,75 @@
+<!-- Header with an Open Watchlist button on the top right -->
+<div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+  <h1>Show List</h1>
+  <button mat-raised-button color="accent" routerLink="/watchlist" (click)="openWatchlist()">Open Watchlist</button>
+</div>
+
+<!-- Filter Form with Input Fields -->
+<form [formGroup]="filterForm" (ngSubmit)="onFilterApply()">
+  <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+    <mat-form-field appearance="fill">
+      <mat-label>Title Contains</mat-label>
+      <input matInput placeholder="Enter title" formControlName="titleContains">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Genre</mat-label>
+      <input matInput placeholder="Genre" formControlName="genre">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Limit</mat-label>
+      <input matInput type="number" placeholder="Default 200" formControlName="limit">
+    </mat-form-field>
+  </div>
+
+  <div style="margin-top: 16px;">
+    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
+    <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
+  </div>
+</form>
+
+<!-- Shows Table -->
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+    <!-- Title Column -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+      <td mat-cell *matCellDef="let show">{{ show.title }}</td>
+    </ng-container>
+
+    <!-- Rating Column -->
+    <ng-container matColumnDef="rating">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
+      <td mat-cell *matCellDef="let show">{{ show.rating }}</td>
+    </ng-container>
+
+    <!-- Genre Column -->
+    <ng-container matColumnDef="genre">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Genre</th>
+      <td mat-cell *matCellDef="let show">{{ show.genre }}</td>
+    </ng-container>
+
+    <!-- Runtime Minutes Column -->
+    <ng-container matColumnDef="runtimeMinutes">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Runtime (min)</th>
+      <td mat-cell *matCellDef="let show">{{ show.runtimeMinutes }}</td>
+    </ng-container>
+
+    <!-- Actions Column (Toggle Button) -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Watchlist</th>
+      <td mat-cell *matCellDef="let show">
+        <mat-slide-toggle
+          [checked]="isInWatchlist(show)"
+          (change)="toggleWatchlist($event, show)">
+        </mat-slide-toggle>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [length]="dataLength" [pageSize]="20"></mat-paginator>
+</div>
