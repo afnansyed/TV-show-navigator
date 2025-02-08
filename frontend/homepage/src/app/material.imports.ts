@@ -8,6 +8,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 export const MATERIAL_IMPORTS = [
   MatButtonModule,
@@ -19,5 +21,7 @@ export const MATERIAL_IMPORTS = [
   MatCardModule,
   MatTableModule,
   MatPaginatorModule,
-  MatSortModule
+  MatSortModule,
+  ReactiveFormsModule,
+  MatSlideToggleModule
 ];
