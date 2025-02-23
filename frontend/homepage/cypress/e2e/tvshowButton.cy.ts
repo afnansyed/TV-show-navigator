@@ -10,7 +10,7 @@ describe(' Get Started Button Navigation Test', () => {
 
     // Click the 'Get Started' button
     cy.get('button')
-      .contains('Get Started')  // Adjust if necessary
+      .contains('Get Started')  
       .click();
 
     // Check if the URL changes to the "shows" page
