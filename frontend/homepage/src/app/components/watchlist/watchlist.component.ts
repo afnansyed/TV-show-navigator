@@ -6,6 +6,7 @@ import { Show } from '../../services/query-shows.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-watchlist',
@@ -21,7 +22,7 @@ export class WatchlistComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private watchlistService: WatchlistService) {}
+  constructor(private watchlistService: WatchlistService, private router: Router) {}
 
   ngOnInit(): void {
     // Subscribe to the watchlist observable so that any changes update the dataSource
@@ -38,5 +39,9 @@ export class WatchlistComponent implements OnInit, AfterViewInit {
   removeShow(show: Show): void {
     this.watchlistService.removeShow(show);
     console.log(`Removed "${show.title}" from watchlist.`);
+  }
+
+  goHome(): void {
+    this.router.navigate(['']);
   }
 }
