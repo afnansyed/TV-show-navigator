@@ -1,29 +1,31 @@
 <!-- Header with an Open Watchlist button on the top right -->
-<div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-  <h1>Show List</h1>
-  <button mat-raised-button color="accent" routerLink="/watchlist" (click)="openWatchlist()">Open Watchlist</button>
+<div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background-color: #3f51b5; color: white;">
+  <h3 style="margin-left: 20px; font-weight: lighter;" routerLink="" (click)="goHome()">Your Navigator for TV Shows</h3>
+  <h1>TV Show List</h1>
+  <button mat-raised-button color="accent" routerLink="/watchlist" (click)="openWatchlist()" style="margin-right: 20px;">Open Watchlist</button>
 </div>
 
 <!-- Filter Form with Input Fields -->
 <form [formGroup]="filterForm" (ngSubmit)="onFilterApply()">
-  <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+  <div style="display: flex; justify-content: center; gap: 16px; margin-left: 20px; margin-top: 26px; margin-bottom: 26px;">
+
+    <p style="font-weight: bold;">BROWSE BY:</p>
+
     <mat-form-field appearance="fill">
-      <mat-label>Title Contains</mat-label>
+      <mat-label>TITLE</mat-label>
       <input matInput placeholder="Enter title" formControlName="titleContains">
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-      <mat-label>Genre</mat-label>
-      <input matInput placeholder="Genre" formControlName="genre">
+      <mat-label>GENRE</mat-label>
+      <input matInput placeholder="Enter genre" formControlName="genre">
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-      <mat-label>Limit</mat-label>
+      <mat-label>LIMIT</mat-label>
       <input matInput type="number" placeholder="Default 200" formControlName="limit">
     </mat-form-field>
-  </div>
 
-  <div style="margin-top: 16px;">
     <button mat-raised-button color="primary" type="submit">Apply Filters</button>
     <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
   </div>
