@@ -44,15 +44,17 @@ To execute unit tests with the [Karma](https://karma-runner.github.io) test runn
 ng test
 ```
 
-## Running end-to-end tests
+## Running Cypress end-to-end test
 
-For end-to-end (e2e) testing, run:
-
+After frontend and backend are running:
 ```bash
-ng e2e
+npx cypress open
 ```
+Test run in google chrome.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Currently, 1 test which is testing the fuctionality of the 'Get Started' button on homepage.
+
+![get-started-cypress-test](https://github.com/user-attachments/assets/f4e5c626-8a7a-402a-88be-d852666fa119)
 
 ## Additional Resources
 
