@@ -57,8 +57,8 @@ func getShows(c *gin.Context) {
 	query := fmt.Sprintf(`
 		SELECT series.tconst, primaryTitle, originalTitle, isAdult, genres, startYear, endYear, runtimeMinutes, avgRating, votes
 		FROM series
-		LEFT JOIN ratings
-		ON series.tconst = ratings.tconst
+		LEFT JOIN oldRatings
+		ON series.tconst = oldRatings.tconst
 		WHERE
 		  (primaryTitle LIKE '%%%s%%'
 		OR originalTitle LIKE '%%%s%%')
@@ -146,7 +146,7 @@ func getShowCount(c *gin.Context) {
 
 // api callback func that queries database for highest rated show
 func getBestRating(c *gin.Context) {
-	rows, err := db.Query("SELECT * FROM ratings ORDER BY avgRating ASC LIMIT 1")
+	rows, err := db.Query("SELECT * FROM oldRatings ORDER BY avgRating ASC LIMIT 1")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
