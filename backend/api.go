@@ -38,6 +38,7 @@ func main() {
 	router.GET("/shows/count", getShowCount)
 	router.GET("/ratings/best", getBestRating)
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
+	router.POST("/user", createUser)
 
 	//port to run backend from
 	router.Run(":8080")
@@ -222,4 +223,32 @@ func getShowEpisodes(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, episodes)
+}
+
+func createUser(c *gin.Context) {
+	type User struct {
+		// json tag to de-serialize json body
+		Username string `json:"userame"`
+		Password string `json:"password"`
+	}
+
+	var newUser User
+
+	// Call BindJSON to bind the received JSON to struct
+	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// modify table to add new user
+	statement := `
+		INSERT INTO Users (Username, Password)
+		VALUES(?, ?)
+	`
+	_, err := db.Exec(statement, newUser.Username, newUser.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, nil)
 }
