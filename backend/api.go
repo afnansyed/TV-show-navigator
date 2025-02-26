@@ -38,7 +38,8 @@ func main() {
 	router.GET("/shows/count", getShowCount)
 	router.GET("/ratings/best", getBestRating)
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
-	router.POST("/user", createUser)
+	router.POST("/users", createUser)
+	router.GET("/users/remove/:id", removeUser)
 
 	//port to run backend from
 	router.Run(":8080")
