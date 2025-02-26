@@ -1,5 +1,12 @@
 # Sprint 1 Report
 Team: Afnan Syed, Joshua Yang, Nathan Harris, Rohan Madiratta
+## Submission Details
+Git Repo: `https://github.com/afnansyed/TV-show-navigator`
+- Due to the size of the sqlite database file, it is excluded from the git repo, but is included in this submission (`./backend/shows.db`) for your convenience.
+
+Links to Submission Videos - [Frontend](https://youtu.be/ss_uGrwGvBw) - [Backend](https://youtu.be/7y_V8vh1N7g)
+
+Instructions to run the project locally, see `README.md` in the root directory
 ## User stories
 - As a user, I want to search for tv shows by looking up the title, so that I can find the show that I am interested in.
   - **Acceptance criteria**: filter in show list

@@ -106,4 +106,8 @@ export class ShowListComponent implements OnInit, AfterViewInit {
   openWatchlist(): void {
     this.router.navigate(['/watchlist']);
   }
+
+  goHome(): void {
+    this.router.navigate(['']);
+  }
 }
