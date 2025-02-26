@@ -165,6 +165,11 @@ func getBestRating(c *gin.Context) {
 }
 
 // api callback func that queries database for all episodes of a specific show
+
+
+
+
+// api callback func that queries database for all episodes of a specific show
 func getShowEpisodes(c *gin.Context) {
 	parentTconst := c.Param("parentTconst")
 
@@ -319,3 +324,4 @@ func getUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
 }
+
