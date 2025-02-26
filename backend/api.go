@@ -39,6 +39,7 @@ func main() {
 	router.GET("/ratings/best", getBestRating)
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
 	router.POST("/users", createUser)
+	router.GET("/users/:id", getUser)
 	router.GET("/users/remove/:id", removeUser)
 
 	//port to run backend from
@@ -285,6 +286,33 @@ func removeUser(c *gin.Context) {
 	//delete row
 	_, err = db.Exec(statement, userID)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
+}
+
+func getUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE rowid == ?
+	`
+
+	//query row data to be deleted
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+	//store data to be deleted
+	var username, password string
+	rows.Next()
+	if err = rows.Scan(&username, &password); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
