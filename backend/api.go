@@ -263,7 +263,7 @@ func removeUser(c *gin.Context) {
 		WHERE rowid == ?
 	`
 	statement := `
-		DELETE *
+		DELETE
 		FROM Users
 		WHERE rowid == ?
 	`
@@ -271,22 +271,22 @@ func removeUser(c *gin.Context) {
 	rows, err := db.Query(query, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	defer rows.Close()
-
-	var (
-		username string
-		password string
-	)
+	//store data to be deleted
+	var username, password string
+	rows.Next()
 	if err = rows.Scan(&username, &password); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	rows.Close()
 
 	//delete row
 	_, err = db.Exec(statement, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
