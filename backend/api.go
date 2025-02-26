@@ -251,5 +251,43 @@ func createUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func removeUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE rowid == ?
+	`
+	statement := `
+		DELETE *
+		FROM Users
+		WHERE rowid == ?
+	`
+	//query row data to be deleted
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	defer rows.Close()
+
+	var (
+		username string
+		password string
+	)
+	if err = rows.Scan(&username, &password); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	//delete row
+	_, err = db.Exec(statement, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
 }
