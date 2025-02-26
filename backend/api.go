@@ -40,7 +40,7 @@ func main() {
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
 	router.POST("/users", createUser)
 	router.GET("/users/:id", getUser)
-	router.GET("/users/remove/:id", removeUser)
+	router.DELETE("/users/:id", deleteUser)
 
 	//port to run backend from
 	router.Run(":8080")
@@ -255,7 +255,7 @@ func createUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func removeUser(c *gin.Context) {
+func deleteUser(c *gin.Context) {
 	userID := c.Param("id")
 
 	query := `
