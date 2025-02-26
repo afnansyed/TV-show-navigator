@@ -228,7 +228,7 @@ func getShowEpisodes(c *gin.Context) {
 func createUser(c *gin.Context) {
 	type User struct {
 		// json tag to de-serialize json body
-		Username string `json:"userame"`
+		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 
