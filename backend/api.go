@@ -38,6 +38,9 @@ func main() {
 	router.GET("/shows/count", getShowCount)
 	router.GET("/ratings/best", getBestRating)
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
+	router.POST("/users", createUser)
+	router.GET("/users/:id", getUser)
+	router.DELETE("/users/:id", deleteUser)
 
 	//port to run backend from
 	router.Run(":8080")
@@ -162,6 +165,11 @@ func getBestRating(c *gin.Context) {
 }
 
 // api callback func that queries database for all episodes of a specific show
+
+
+
+
+// api callback func that queries database for all episodes of a specific show
 func getShowEpisodes(c *gin.Context) {
 	parentTconst := c.Param("parentTconst")
 
@@ -223,3 +231,97 @@ func getShowEpisodes(c *gin.Context) {
 
 	c.JSON(http.StatusOK, episodes)
 }
+
+func createUser(c *gin.Context) {
+	type User struct {
+		// json tag to de-serialize json body
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	var newUser User
+
+	// Call BindJSON to bind the received JSON to struct
+	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// modify table to add new user
+	statement := `
+		INSERT INTO Users (Username, Password)
+		VALUES(?, ?)
+	`
+	_, err := db.Exec(statement, newUser.Username, newUser.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func deleteUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE rowid == ?
+	`
+	statement := `
+		DELETE
+		FROM Users
+		WHERE rowid == ?
+	`
+	//query row data to be deleted
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	//store data to be deleted
+	var username, password string
+	rows.Next()
+	if err = rows.Scan(&username, &password); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	rows.Close()
+
+	//delete row
+	_, err = db.Exec(statement, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
+}
+
+func getUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE rowid == ?
+	`
+
+	//query row data to be deleted
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+	//store data to be deleted
+	var username, password string
+	rows.Next()
+	if err = rows.Scan(&username, &password); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
+}
+
