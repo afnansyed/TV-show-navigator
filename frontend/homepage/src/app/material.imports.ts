@@ -10,7 +10,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
+import { MatSliderModule } from '@angular/material/slider';
 export const MATERIAL_IMPORTS = [
   MatButtonModule,
   MatIconModule,
@@ -23,5 +23,7 @@ export const MATERIAL_IMPORTS = [
   MatPaginatorModule,
   MatSortModule,
   ReactiveFormsModule,
-  MatSlideToggleModule
+  MatSlideToggleModule,
+  MatSliderModule,
+
 ];

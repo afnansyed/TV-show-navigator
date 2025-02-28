@@ -7,17 +7,23 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+
 
 @Component({
   selector: 'app-watchlist',
   standalone: true,
-  imports: [MATERIAL_IMPORTS],
+  imports: [MATERIAL_IMPORTS, RouterModule],
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.css']
 })
 export class WatchlistComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['title', 'rating', 'genre', 'runtimeMinutes', 'actions'];
+  // Add 'userRating' to the displayed columns
+  displayedColumns: string[] = ['title', 'rating', 'genre', 'runtimeMinutes', 'userRating', 'actions'];
   dataSource = new MatTableDataSource<Show>([]);
+
+  // List of valid ratings (1 to 10)
+  ratings: number[] = [1,2,3,4,5,6,7,8,9,10];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -44,4 +50,14 @@ export class WatchlistComponent implements OnInit, AfterViewInit {
   goHome(): void {
     this.router.navigate(['']);
   }
+
+  openShowList(): void {
+    this.router.navigate(['shows']);
+  }
+
+  updateUserRating(show: Show, event: any): void {
+    show.userRating = event.value;
+    // Optionally, update the watchlistService if you need persistence.
+  }
+
 }

@@ -56,6 +56,7 @@ export class ShowListComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
+
   loadShows(filters?: ShowFilter): void {
     this.showService.getShows(filters).subscribe({
       next: (data) => {
