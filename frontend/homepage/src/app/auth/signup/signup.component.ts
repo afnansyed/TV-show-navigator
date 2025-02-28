@@ -11,12 +11,10 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, MATERIAL_IMPORTS, FormsModule]
 })
 export class SignupComponent {
-  email: string = '';
   username: string = '';
   password: string = '';
 
   onSubmit() {
-    console.log('Email:', this.email);
     console.log('Username:', this.username);
     console.log('Password:', this.password);
   }

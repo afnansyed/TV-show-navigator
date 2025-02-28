@@ -7,14 +7,11 @@
   </mat-toolbar>
   
   
-  
   <div class="sign-up-container">
     <mat-card class="sign-up">
       <mat-card-title>CREATE ACCOUNT</mat-card-title>
         <mat-card-content>
           <form (ngSubmit)="onSubmit()">
-            <label for="email">Email:</label>
-            <input type="text" id="email" [(ngModel)]="email" name="email" required>
 
             <label for="username">Username:</label>
             <input type="text" id="username" [(ngModel)]="username" name="username" required>
