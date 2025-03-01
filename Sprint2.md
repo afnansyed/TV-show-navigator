@@ -28,7 +28,7 @@
     - Has a Sign In button that has sign-in page router link
     - Routes to sign-in page when Sign In button is clicked
 - Cypress test:
-  - Testing the fuctionality of the 'Get Started' button on homepage:
+  - (1 test) Testing the fuctionality of the 'Get Started' button on homepage:
     - Vist homepage
     - Check the 'Get Started' button exists
     - Click the 'Get Started' button
