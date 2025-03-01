@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
   // Add MatSlideToggleModule and MatButtonModule to the imports array
   imports: [MATERIAL_IMPORTS, ReactiveFormsModule, MatSlideToggleModule, MatButtonModule],
   templateUrl: './show-list.component.html',
-  styleUrls: ['./show-list.component.css']
+  styleUrls: ['./show-list.component.scss']
 })
 export class ShowListComponent implements OnInit, AfterViewInit {
   // Table columns: Title, Rating, Genre, Runtime Minutes, and Actions (toggle)

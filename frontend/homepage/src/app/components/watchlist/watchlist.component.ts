@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [MATERIAL_IMPORTS, RouterModule],
   templateUrl: './watchlist.component.html',
-  styleUrls: ['./watchlist.component.css']
+  styleUrls: ['./watchlist.component.scss']
 })
 export class WatchlistComponent implements OnInit, AfterViewInit {
   // Add 'userRating' to the displayed columns
