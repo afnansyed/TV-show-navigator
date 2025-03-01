@@ -40,7 +40,9 @@ func main() {
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
 	router.POST("/users", createUser)
 	router.GET("/users/:id", getUser)
+	router.GET("/users/all", getAllUsers)
 	router.DELETE("/users/:id", deleteUser)
+	router.GET("/validateUser", validateUser)
 
 	//port to run backend from
 	router.Run(":8080")
@@ -163,11 +165,6 @@ func getBestRating(c *gin.Context) {
 	rows.Scan(&tconst, &avgRating, &votes)
 	c.JSON(http.StatusOK, gin.H{"tconst": tconst, "avgRating": avgRating, "votes": votes})
 }
-
-// api callback func that queries database for all episodes of a specific show
-
-
-
 
 // api callback func that queries database for all episodes of a specific show
 func getShowEpisodes(c *gin.Context) {
@@ -325,3 +322,65 @@ func getUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
 }
 
+func validateUser(c *gin.Context) {
+	username := c.Query("username")
+	password := c.Query("password")
+
+	if len(username) == 0 || len(password) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "username or password variables in api call is missing"})
+		return
+	}
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE
+			Username LIKE ? AND
+			Password LIKE ?
+	`
+	rows, err := db.Query(query, username, password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		c.JSON(http.StatusOK, gin.H{})
+	} else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
+	}
+}
+
+func getAllUsers(c *gin.Context) {
+	query := `
+		SELECT rowid, *
+		FROM Users
+	`
+	rows, err := db.Query(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var users []gin.H
+	for rows.Next() {
+		var (
+			rowid    int
+			username string
+			password string
+		)
+		if err := rows.Scan(&rowid, &username, &password); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		users = append(users, gin.H{
+			"rowid":    rowid,
+			"username": username,
+			"password": password,
+		})
+	}
+
+	c.JSON(http.StatusOK, users)
+}
