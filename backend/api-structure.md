@@ -36,6 +36,14 @@ List of APIs implemented in `api.go`, their parameters and outputs
   - [Example](#example-7)
   - [Input](#input-7)
   - [Output](#output-7)
+- [/users/all](#usersall)
+  - [Example](#example-8)
+  - [Input](#input-8)
+  - [Output](#output-8)
+- [/validateUsers](#validateusers)
+  - [Examples](#examples)
+  - [Input](#input-9)
+  - [Output](#output-9)
 
 # /shows
 ## Example
@@ -169,3 +177,39 @@ a DELETE api to delete a user by id
 - id : INTEGER : id value of user
 ## Output
 200 code and JSON of user data (see GET) if successful, 500 otherwise
+# /users/all
+retrieves all users data from database
+## Example
+`/users/all`
+## Input
+NONE
+## Output
+JSON of the following form
+```json
+[
+  {
+    rowid: 1,
+    username: "name",
+    password: "pass"
+  },
+  {
+    rowid: 2,
+    username: "name",
+    password: "pass"
+  }
+]
+```
+# /validateUsers
+Validates if user credentials are in the database or not
+## Examples
+`/validateUser?username=name&password=pass`
+## Input
+Both input variables are required
+- username: the username string to check
+- password: the password string to check
+## Output
+The ROWID of the user if found, 500 error if not. JSON in the form:
+```json
+{
+  rowid: 1
+}
