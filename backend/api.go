@@ -40,6 +40,7 @@ func main() {
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
 	router.POST("/users", createUser)
 	router.GET("/users/:id", getUser)
+	router.GET("/users/all", getAllUsers)
 	router.DELETE("/users/:id", deleteUser)
 	router.GET("/validateUser", validateUser)
 
@@ -349,4 +350,37 @@ func validateUser(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
 	}
+}
+
+func getAllUsers(c *gin.Context) {
+	query := `
+		SELECT rowid, *
+		FROM Users
+	`
+	rows, err := db.Query(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var users []gin.H
+	for rows.Next() {
+		var (
+			rowid    int
+			username string
+			password string
+		)
+		if err := rows.Scan(&rowid, &username, &password); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		users = append(users, gin.H{
+			"rowid":    rowid,
+			"username": username,
+			"password": password,
+		})
+	}
+
+	c.JSON(http.StatusOK, users)
 }
