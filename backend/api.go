@@ -41,6 +41,7 @@ func main() {
 	router.POST("/users", createUser)
 	router.GET("/users/:id", getUser)
 	router.DELETE("/users/:id", deleteUser)
+	router.GET("/validateUser", validateUser)
 
 	//port to run backend from
 	router.Run(":8080")
@@ -325,3 +326,31 @@ func getUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
 }
 
+func validateUser(c *gin.Context) {
+	username := c.Query("username")
+	password := c.Query("username")
+
+	if len(username) == 0 || len(password) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "username or password variables in api call is missing"})
+	}
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE
+			username == ? AND
+			password == ?
+	`
+	rows, err := db.Query(query, username, password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		c.JSON(http.StatusOK, gin.H{})
+	} else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
+	}
+}
