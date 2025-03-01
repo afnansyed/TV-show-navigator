@@ -64,4 +64,32 @@ describe('WatchlistService', () => {
     service.addShow(dummyShow);
     expect(service.isInWatchlist(dummyShow)).toBeTrue();
   });
+
+  it('should handle adding a large number of shows', (done: DoneFn) => {
+    const numShows = 1000; // Number of dummy shows for the pressure test
+    const dummyShows: Show[] = [];
+
+    // Generate dummy shows with unique tconst and title properties
+    for (let i = 0; i < numShows; i++) {
+      dummyShows.push({
+        tconst: `tt${1000000 + i}`,
+        title: `Test Show ${i}`,
+        rating: 5 + (i % 5), // Arbitrary rating between 5 and 9
+        genre: 'Test Genre',
+        runtimeMinutes: 60
+      });
+    }
+
+    // Add each dummy show to the watchlist
+    dummyShows.forEach(show => service.addShow(show));
+
+    // Subscribe to the watchlist observable and verify the length.
+    service.watchlist$.subscribe(watchlist => {
+      // When the watchlist length reaches the expected number, complete the test.
+      if (watchlist.length === numShows) {
+        expect(watchlist.length).toBe(numShows);
+        done();
+      }
+    });
+  });
 });
