@@ -348,7 +348,7 @@ func validateUser(c *gin.Context) {
 	//if query returns something, return rowid of first row (should only be 1)
 	if rows.Next() {
 		var rowid int
-		if err := rows.Scan(&rowid); err == nil {
+		if err := rows.Scan(&rowid); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
