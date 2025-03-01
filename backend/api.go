@@ -166,11 +166,6 @@ func getBestRating(c *gin.Context) {
 }
 
 // api callback func that queries database for all episodes of a specific show
-
-
-
-
-// api callback func that queries database for all episodes of a specific show
 func getShowEpisodes(c *gin.Context) {
 	parentTconst := c.Param("parentTconst")
 
@@ -328,18 +323,19 @@ func getUser(c *gin.Context) {
 
 func validateUser(c *gin.Context) {
 	username := c.Query("username")
-	password := c.Query("username")
+	password := c.Query("password")
 
 	if len(username) == 0 || len(password) == 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "username or password variables in api call is missing"})
+		return
 	}
 
 	query := `
 		SELECT *
 		FROM Users
 		WHERE
-			username == ? AND
-			password == ?
+			Username LIKE ? AND
+			Password LIKE ?
 	`
 	rows, err := db.Query(query, username, password)
 	if err != nil {
