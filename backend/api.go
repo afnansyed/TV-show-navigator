@@ -332,7 +332,7 @@ func validateUser(c *gin.Context) {
 	}
 
 	query := `
-		SELECT *
+		SELECT rowid
 		FROM Users
 		WHERE
 			Username LIKE ? AND
@@ -345,8 +345,14 @@ func validateUser(c *gin.Context) {
 	}
 	defer rows.Close()
 
+	//if query returns something, return rowid of first row (should only be 1)
 	if rows.Next() {
-		c.JSON(http.StatusOK, gin.H{})
+		var rowid int
+		if err := rows.Scan(&rowid); err == nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"rowid": rowid})
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
 	}
