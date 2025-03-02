@@ -36,4 +36,46 @@
     - Check if "shows" page content is visible
     
 ### Backend:
+
+- Unit tests:
+  
+  - getShowCount endpoint:
+
+    - Verifies correct HTTP status code (200)
+
+    - Confirms response contains COUNT field
+
+    - Validates COUNT is a non-negative number
+
+  - getBestRating endpoint:
+
+    - Verifies correct HTTP status code (200)
+
+    - Confirms response contains tconst, avgRating, and votes fields
+
+    - Validates data structure integrity
+
+  - getShowEpisodes endpoint:
+
+    - Tests with valid parentTconst parameter
+
+    - Verifies correct episode structure (tconst, parentTconst, seasonNumber, episodeNumber)
+
+    - Tests with invalid parentTconst to ensure proper error handling (404)
+
+  - getShows endpoint:
+
+    - Tests default parameters behavior
+
+    - Verifies title filtering functionality
+
+    - Confirms limit parameter works correctly
+
+  - createUser endpoint:
+
+    - Verifies user creation with valid data
+
+    - Confirms database persistence of user information
+
+
 ## API Documentation
