@@ -23,10 +23,6 @@ export class SignupComponent {;
     this.signupService.createUser(this.username, this.password)
       .subscribe(
         (response) => console.log('Account created successfully', response),
-        (error) => {
-          this.errorMess = 'Could not create account';
-          console.error('Error creating account', error);
-        }
       );
   }
 }
