@@ -22,6 +22,7 @@
     - should create
     - Displays the correct paragraph text
     - Has a Get Started button that has shows page router link
+    - Routes to the Shows page when the Get Started button is clicked
   - Navbar component:
     - should create
     - Displays the Your Navigator for TV Shows logo
