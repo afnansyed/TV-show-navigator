@@ -27,6 +27,12 @@
     - Routes to sign-up page when Sign Up button is clicked
     - Has a Sign In button that has sign-in page router link
     - Routes to sign-in page when Sign In button is clicked
+  - Services:
+    - query-shows service
+      - Testing http parameters with different parameters 
+    - watchlist service
+      - Testing adding and deleting shows to the list
+      - Testing adding large numbers of shows to the list 
 - Cypress test:
   - (1 test) Testing the fuctionality of the 'Get Started' button on homepage:
     - Vist homepage
