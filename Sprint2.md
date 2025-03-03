@@ -10,6 +10,10 @@
   - Removed email from sign up option
 
 ### Backend:
+- Added tables to database schema to store user activity
+  - Follows, Ratings, User Accounts
+- Added API endpoints to create, validate, list, and remove User accounts from database
+  - used POST and DELETE REST requests for first time
 
 ## Testing
 ### Frontend:
