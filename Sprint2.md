@@ -1,5 +1,5 @@
 # Sprint 2 Report
-## Features Added this Spring
+## Features Added this Sprint
 ### Frontend:
 - Implemented user Sign Up 
 - Minor changes with UI design:
@@ -36,7 +36,10 @@
       - Testing http parameters with different parameters 
     - watchlist service
       - Testing adding and deleting shows to the list
-      - Testing adding large numbers of shows to the list 
+      - Testing adding large numbers of shows to the list
+
+![unittests](https://github.com/user-attachments/assets/b899d004-6fbb-4959-bc18-e6926433361d)
+
 - Cypress test:
   - (1 test) Testing the fuctionality of the 'Get Started' button on homepage:
     - Vist homepage
@@ -44,6 +47,9 @@
     - Click the 'Get Started' button
     - Check if the URL changes to the "shows" page
     - Check if "shows" page content is visible
+
+![cypress test](https://github.com/user-attachments/assets/499b74a7-8312-42bd-8e01-7f9083c2c2a0)
+
     
 ### Backend:
 
