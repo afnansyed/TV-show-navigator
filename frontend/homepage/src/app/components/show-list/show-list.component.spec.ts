@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ShowListComponent } from './show-list.component';
 
 
@@ -9,7 +9,8 @@ describe('ShowListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ShowListComponent]
+      imports: [ShowListComponent],
+      providers: [provideHttpClientTesting()]
     })
     .compileComponents();
 
