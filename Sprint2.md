@@ -1,7 +1,8 @@
 # Sprint 2 Report
 ## Features Added this Sprint
 ### Frontend:
-- Implemented user Sign Up 
+- Implemented user Sign Up (integration with backend)
+- Implemented rating bar that allows user to rate each show in their watchlist from 1-10
 - Minor changes with UI design:
   - Able to route from tv show list page to home page
   - Able to route from watch list page to home page
