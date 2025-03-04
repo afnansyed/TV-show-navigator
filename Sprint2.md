@@ -1,4 +1,13 @@
 # Sprint 2 Report
+
+## Submission Details
+Git Repo: `https://github.com/afnansyed/TV-show-navigator`
+- Due to the size of the sqlite database file, it is excluded from the git repo, but is included in this submission (`./backend/shows.db`) for your convenience.
+
+Links to Submission Videos - https://www.youtube.com/watch?v=D7JqHaF_gx8
+
+Instructions to run the project locally, see `README.md` in the root directory
+
 ## Features Added this Sprint
 ### Frontend:
 - Implemented user Sign Up (integration with backend)
