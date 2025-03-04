@@ -106,3 +106,5 @@ Instructions to run the project locally, see `README.md` in the root directory
 
 
 ## API Documentation
+
+The path to the API documentation is `backend/api-structure.md`
