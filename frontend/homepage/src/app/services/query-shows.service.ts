@@ -32,6 +32,7 @@ export interface Show {
   rating: number;
   genre: string;
   runtimeMinutes: number;
+  userRating?: number;   // Optional field for user ratings
 }
 
 // These are the filters (matching the API’s parameters).
@@ -51,6 +52,12 @@ export class ShowService {
   private apiUrl = 'http://localhost:8080/shows';
 
   constructor(private http: HttpClient) {}
+
+  getShowCount(): Observable<number> {
+    return this.http.get<{ COUNT: number }>(`${this.apiUrl}/count`).pipe(
+      map(response => response.COUNT)
+    );
+  }
 
   getShows(filters?: ShowFilter): Observable<Show[]> {
     let params = new HttpParams();
