@@ -8,15 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var db *sql.DB
-
-func RegisterShowEndpoints(database *sql.DB, router *gin.Engine) {
-	db = database
-	router.GET("/shows", getShows)
-	router.GET("/shows/:id", getShow)
-	router.GET("/shows/count", getShowCount)
-}
-
 // api callback func that queries database for show information
 func getShows(c *gin.Context) {
 	//filter params

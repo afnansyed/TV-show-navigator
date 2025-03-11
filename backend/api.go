@@ -34,7 +34,7 @@ func main() {
 	}))
 
 	//list of api endpoints
-	endpoints.RegisterShowEndpoints(db, router)
+	endpoints.RegisterEndpoints(router)
 	router.GET("/ratings/best", getBestRating)
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
 	router.POST("/users", createUser)
@@ -42,6 +42,7 @@ func main() {
 	router.GET("/users/all", getAllUsers)
 	router.DELETE("/users/:id", deleteUser)
 	router.GET("/validateUser", validateUser)
+	defer endpoints.CloseDB()
 
 	//port to run backend from
 	router.Run(":8080")
