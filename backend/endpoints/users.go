@@ -1,0 +1,169 @@
+package endpoints
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func createUser(c *gin.Context) {
+	type User struct {
+		// json tag to de-serialize json body
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	var newUser User
+
+	// Call BindJSON to bind the received JSON to struct
+	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// modify table to add new user
+	statement := `
+		INSERT INTO Users (Username, Password)
+		VALUES(?, ?)
+	`
+	_, err := db.Exec(statement, newUser.Username, newUser.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func deleteUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE rowid == ?
+	`
+	statement := `
+		DELETE
+		FROM Users
+		WHERE rowid == ?
+	`
+	//query row data to be deleted
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	//store data to be deleted
+	var username, password string
+	rows.Next()
+	if err = rows.Scan(&username, &password); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	rows.Close()
+
+	//delete row
+	_, err = db.Exec(statement, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
+}
+
+func getUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	query := `
+		SELECT *
+		FROM Users
+		WHERE rowid == ?
+	`
+
+	//query row data to be deleted
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+	//store data to be deleted
+	var username, password string
+	rows.Next()
+	if err = rows.Scan(&username, &password); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"username": username, "password": password})
+}
+
+func validateUser(c *gin.Context) {
+	username := c.Query("username")
+	password := c.Query("password")
+
+	if len(username) == 0 || len(password) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "username or password variables in api call is missing"})
+		return
+	}
+
+	query := `
+		SELECT rowid
+		FROM Users
+		WHERE
+			Username LIKE ? AND
+			Password LIKE ?
+	`
+	rows, err := db.Query(query, username, password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	//if query returns something, return rowid of first row (should only be 1)
+	if rows.Next() {
+		var rowid int
+		if err := rows.Scan(&rowid); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"rowid": rowid})
+	} else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
+	}
+}
+
+func getAllUsers(c *gin.Context) {
+	query := `
+		SELECT rowid, *
+		FROM Users
+	`
+	rows, err := db.Query(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var users []gin.H
+	for rows.Next() {
+		var (
+			rowid    int
+			username string
+			password string
+		)
+		if err := rows.Scan(&rowid, &username, &password); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		users = append(users, gin.H{
+			"rowid":    rowid,
+			"username": username,
+			"password": password,
+		})
+	}
+
+	c.JSON(http.StatusOK, users)
+}
