@@ -11,7 +11,7 @@ var db *sql.DB
 // register all endpoints for api
 func RegisterEndpoints(router *gin.Engine) {
 	var err error
-	db, err = sql.Open("sqlite3", "../shows.db")
+	db, err = sql.Open("sqlite3", "shows.db")
 	if err != nil {
 		panic(err)
 	}
