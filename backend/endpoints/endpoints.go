@@ -19,7 +19,6 @@ func RegisterEndpoints(router *gin.Engine) {
 	router.GET("/shows", getShows)
 	router.GET("/shows/:id", getShow)
 	router.GET("/shows/count", getShowCount)
-	router.GET("/ratings/best", getBestRating)
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
 	router.POST("/users", createUser)
 	router.GET("/users/:id", getUser)
