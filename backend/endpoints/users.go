@@ -21,12 +21,31 @@ func createUser(c *gin.Context) {
 		return
 	}
 
+	//ping database to see if username or password match
+	query := `
+		SELECT *
+		FROM Users
+		WHERE
+			Username LIKE ?
+	`
+	rows, err := db.Query(query, newUser.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Username already exists. Change your username to make it unique."})
+		return
+	}
+
 	// modify table to add new user
 	statement := `
 		INSERT INTO Users (Username, Password)
 		VALUES(?, ?)
 	`
-	_, err := db.Exec(statement, newUser.Username, newUser.Password)
+	_, err = db.Exec(statement, newUser.Username, newUser.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
