@@ -23,10 +23,10 @@ func createUser(c *gin.Context) {
 
 	//ping database to see if username or password match
 	query := `
-		SELECT *
+		SELECT Username
 		FROM Users
 		WHERE
-			Username LIKE ?
+			Username = ?
 	`
 	rows, err := db.Query(query, newUser.Username)
 	if err != nil {
@@ -35,7 +35,8 @@ func createUser(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	if !rows.Next() {
+	//if rows are returned, then match exists
+	if rows.Next() {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Username already exists. Change your username to make it unique."})
 		return
 	}
