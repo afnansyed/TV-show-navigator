@@ -153,25 +153,27 @@ func validateUser(c *gin.Context) {
 	defer rows.Close()
 
 	// if query returns something, return rowid of first row (should only be 1)
-	if rows.Next() {
-		var rowid int
-		var passHash string
-		if err := rows.Scan(&rowid, &passHash); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		// verify password matches hash
-		if !encryption.VerifyPassword(password, passHash) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "password is incorrect"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"rowid": rowid})
-	} else {
+	if !rows.Next() {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
+		return
 	}
+
+	var rowid int
+	var passHash string
+	if err := rows.Scan(&rowid, &passHash); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// verify password matches hash
+	if !encryption.VerifyPassword(password, passHash) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "password is incorrect"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"rowid": rowid})
 }
 
+// returns all users in db as JSON
 func getAllUsers(c *gin.Context) {
 	query := `
 		SELECT rowid, *
