@@ -1,6 +1,8 @@
 package endpoints
 
 import (
+	"backend/encryption"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,12 +43,20 @@ func createUser(c *gin.Context) {
 		return
 	}
 
+	// encrypt password
+	hash, err := encryption.HashPassword(newUser.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("hash", hash)
+
 	// modify table to add new user
 	statement := `
 		INSERT INTO Users (Username, Password)
 		VALUES(?, ?)
 	`
-	_, err = db.Exec(statement, newUser.Username, newUser.Password)
+	_, err = db.Exec(statement, newUser.Username, hash)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
