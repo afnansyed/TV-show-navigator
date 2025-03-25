@@ -48,6 +48,7 @@ func createUser(c *gin.Context) {
 	_, err = db.Exec(statement, newUser.Username, newUser.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{})
