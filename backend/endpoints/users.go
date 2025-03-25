@@ -140,26 +140,32 @@ func validateUser(c *gin.Context) {
 	}
 
 	query := `
-		SELECT rowid
+		SELECT rowid, Password
 		FROM Users
 		WHERE
-			Username LIKE ? AND
-			Password LIKE ?
+			Username LIKE ?
 	`
-	rows, err := db.Query(query, username, password)
+	rows, err := db.Query(query, username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	defer rows.Close()
 
-	//if query returns something, return rowid of first row (should only be 1)
+	// if query returns something, return rowid of first row (should only be 1)
 	if rows.Next() {
 		var rowid int
-		if err := rows.Scan(&rowid); err != nil {
+		var passHash string
+		if err := rows.Scan(&rowid, &passHash); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		// verify password matches hash
+		if !encryption.VerifyPassword(password, passHash) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "password is incorrect"})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{"rowid": rowid})
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
