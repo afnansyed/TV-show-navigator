@@ -112,14 +112,15 @@ func getUser(c *gin.Context) {
 		WHERE rowid == ?
 	`
 
-	//query row data to be deleted
+	//query row data
 	rows, err := db.Query(query, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	defer rows.Close()
-	//store data to be deleted
+
+	//cache db results
 	var username, password string
 	rows.Next()
 	if err = rows.Scan(&username, &password); err != nil {
