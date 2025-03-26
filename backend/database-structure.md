@@ -25,7 +25,7 @@ existing rating data from dataset, functionally read-only. Use "newRatings" tabl
 - "seasonNumber" : TEXT : season number for that episode
 - "episodeNumber" : TEXT : episode number for the episode
 ## newRatings
-only one rating per user-show pair
+only one rating per user-show pair (composite PRIMARY KEY, replace on conflict)
 - "userID" : INTEGER : number matching the rowid for that user in table: User, column: "rowid"
 - "showID : TEXT : string id matching the id for the tv series, found in table: Series, column: "tconst"
 - "rating" : FLOAT : rating of show, values constrained between 0,10
@@ -38,7 +38,7 @@ no duplicate follower-followee relationships
 - "Follower" : INTEGER : user id of the user who is the follower in a follower-followee relationship
 - "Followee" : INTEGER : user id of the user who is being following in a follower-followee relationship
 ## WatchingStatus
-userID-showID are composite primary key
+userID-showID are unique (composite PRIMARY KEY, replace on conflict)
 - "userID" : INTEGER : number matching the rowid for that user in table: User, column: "rowid"
 - "showID : TEXT : string id matching the id for the tv series, found in table: Series, column: "tconst"
 - "status" : INTEGER : number corresponding to enum for watching status
