@@ -28,8 +28,8 @@ func RegisterEndpoints(router *gin.Engine) {
 	router.GET("/validateUser", validateUser)
 
 	router.GET("/ratings", getRatings)
-	router.POST("/ratings", getRatings)
-	router.DELETE("/ratings", getRatings)
+	router.POST("/ratings", addRating)
+	router.DELETE("/ratings", deleteRating)
 }
 
 func CloseDB() {
