@@ -16,7 +16,7 @@ import (
 func TestGetAllComments(t *testing.T) {
 	// Initialize the database connection
 	var err error
-	db, err = sql.Open("sqlite3", "shows.db") // Use your actual database file
+	db, err = sql.Open("sqlite3", "shows.db") // Using latest db file
 	if err != nil {
 		t.Fatalf("Failed to connect to database: %v", err)
 	}
