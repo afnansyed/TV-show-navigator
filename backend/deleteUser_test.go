@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
@@ -12,7 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestDeleteUser tests the deleteUser function
 func TestDeleteUser(t *testing.T) {
 	// Set up test database connection
 	var err error
@@ -22,10 +22,10 @@ func TestDeleteUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Setting up the Gin router
+	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.DELETE("/users/:id", deleteUser)
+	endpoints.RegisterEndpoints(router)
 
 	// Create a test user in the database
 	testUser := map[string]string{

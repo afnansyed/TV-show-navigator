@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
@@ -22,10 +23,14 @@ func TestGetAllUsers(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Setting up the Gin router
+	// Clean up existing users
+	_, err = db.Exec("DELETE FROM Users")
+	assert.NoError(t, err)
+
+	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/users/all", getAllUsers)
+	endpoints.RegisterEndpoints(router)
 
 	// Create test users in the database
 	testUsers := []map[string]string{
@@ -61,10 +66,6 @@ func TestGetAllUsers(t *testing.T) {
 	t.Logf("PASS: Response body matches expected data")
 
 	// Clean up - delete the test users
-	for _, user := range testUsers {
-		_, err = db.Exec("DELETE FROM Users WHERE Username = ?", user["username"])
-		if err != nil {
-			t.Logf("Warning: Failed to delete test user: %v", err)
-		}
-	}
+	_, err = db.Exec("DELETE FROM Users")
+	assert.NoError(t, err)
 }

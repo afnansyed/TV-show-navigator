@@ -1,11 +1,13 @@
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"net/http"
+	"backend/encryption"
 	"net/http/httptest"
 	"testing"
-    "encoding/json"
+	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
@@ -22,17 +24,24 @@ func TestValidateUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Setting up the Gin router
+	// Clean up existing users
+	_, err = db.Exec("DELETE FROM Users")
+	assert.NoError(t, err)
+
+	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/validateUser", validateUser)
+	endpoints.RegisterEndpoints(router)
 
 	// Create a test user in the database
 	testUser := map[string]string{
 		"username": "testuser123",
 		"password": "testpassword123",
 	}
-	_, err = db.Exec("INSERT INTO Users (Username, Password) VALUES (?, ?)", testUser["username"], testUser["password"])
+	// Encrypt password before inserting into database
+	encryptedPassword, err := encryption.HashPassword(testUser["password"])
+	assert.NoError(t, err)
+	_, err = db.Exec("INSERT INTO Users (Username, Password) VALUES (?, ?)", testUser["username"], encryptedPassword)
 	assert.NoError(t, err)
 
 	// Create a test request with valid credentials
@@ -71,7 +80,5 @@ func TestValidateUser(t *testing.T) {
 
 	// Clean up - delete the test user
 	_, err = db.Exec("DELETE FROM Users WHERE Username = ?", testUser["username"])
-	if err != nil {
-		t.Logf("Warning: Failed to delete test user: %v", err)
-	}
+	assert.NoError(t, err)
 }
