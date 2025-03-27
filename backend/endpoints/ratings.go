@@ -138,6 +138,7 @@ func getRating(c *gin.Context, userID int, showID string) {
 	//store data to be returned in single obj
 	var ratingVal float32
 
+	rows.Next()
 	if err = rows.Scan(&ratingVal); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
