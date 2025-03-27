@@ -113,6 +113,9 @@ func getRatings(c *gin.Context) {
 	} else if showID != "" {
 		//if only showID defined, get all ratings of that show
 		getRatingsFromShow(c, showID)
+	} else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "neither userID nor showID provided"})
+		return
 	}
 }
 
