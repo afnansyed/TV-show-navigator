@@ -20,11 +20,16 @@ func RegisterEndpoints(router *gin.Engine) {
 	router.GET("/shows/:id", getShow)
 	router.GET("/shows/count", getShowCount)
 	router.GET("/episodes/:parentTconst", getShowEpisodes)
+
 	router.POST("/users", createUser)
 	router.GET("/users/:id", getUser)
 	router.GET("/users/all", getAllUsers)
 	router.DELETE("/users/:id", deleteUser)
 	router.GET("/validateUser", validateUser)
+
+	router.GET("/ratings", getRatings)
+	router.POST("/ratings", addRating)
+	router.DELETE("/ratings", deleteRating)
 }
 
 func CloseDB() {

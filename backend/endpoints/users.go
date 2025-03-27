@@ -1,6 +1,8 @@
 package endpoints
 
 import (
+	"backend/encryption"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,12 +43,20 @@ func createUser(c *gin.Context) {
 		return
 	}
 
+	// encrypt password
+	hash, err := encryption.HashPassword(newUser.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("hash", hash)
+
 	// modify table to add new user
 	statement := `
 		INSERT INTO Users (Username, Password)
 		VALUES(?, ?)
 	`
-	_, err = db.Exec(statement, newUser.Username, newUser.Password)
+	_, err = db.Exec(statement, newUser.Username, hash)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -102,14 +112,15 @@ func getUser(c *gin.Context) {
 		WHERE rowid == ?
 	`
 
-	//query row data to be deleted
+	//query row data
 	rows, err := db.Query(query, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	defer rows.Close()
-	//store data to be deleted
+
+	//cache db results
 	var username, password string
 	rows.Next()
 	if err = rows.Scan(&username, &password); err != nil {
@@ -130,32 +141,40 @@ func validateUser(c *gin.Context) {
 	}
 
 	query := `
-		SELECT rowid
+		SELECT rowid, Password
 		FROM Users
 		WHERE
-			Username LIKE ? AND
-			Password LIKE ?
+			Username LIKE ?
 	`
-	rows, err := db.Query(query, username, password)
+	rows, err := db.Query(query, username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	defer rows.Close()
 
-	//if query returns something, return rowid of first row (should only be 1)
-	if rows.Next() {
-		var rowid int
-		if err := rows.Scan(&rowid); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"rowid": rowid})
-	} else {
+	// if query returns something, return rowid of first row (should only be 1)
+	if !rows.Next() {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "That user does not exist in the database"})
+		return
 	}
+
+	var rowid int
+	var passHash string
+	if err := rows.Scan(&rowid, &passHash); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// verify password matches hash
+	if !encryption.VerifyPassword(password, passHash) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "password is incorrect"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"rowid": rowid})
 }
 
+// returns all users in db as JSON
 func getAllUsers(c *gin.Context) {
 	query := `
 		SELECT rowid, *
