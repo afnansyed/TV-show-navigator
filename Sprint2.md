@@ -1,7 +1,17 @@
 # Sprint 2 Report
+
+## Submission Details
+Git Repo: `https://github.com/afnansyed/TV-show-navigator`
+- Due to the size of the sqlite database file, it is excluded from the git repo, but is included in this submission (`./backend/shows.db`) for your convenience.
+
+Links to Demo Video, first half is frontend and the second half is backend - https://www.youtube.com/watch?v=D7JqHaF_gx8
+
+Instructions to run the project locally, see `README.md` in the root directory
+
 ## Features Added this Sprint
 ### Frontend:
-- Implemented user Sign Up 
+- Implemented user Sign Up (integration with backend)
+- Implemented rating bar that allows user to rate each show in their watchlist from 1-10
 - Minor changes with UI design:
   - Able to route from tv show list page to home page
   - Able to route from watch list page to home page
@@ -96,3 +106,6 @@
 
 
 ## API Documentation
+
+The path to the API documentation is [`backend/api-structure.md`](backend/api-structure.md)
+
