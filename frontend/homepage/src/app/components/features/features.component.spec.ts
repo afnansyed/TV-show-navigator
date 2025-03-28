@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
 })
 class GetStartedPage {}
 
-describe('hero component unit test', () => {
+describe('features component unit test', () => {
   let component: FeaturesComponent;
   let fixture: ComponentFixture<FeaturesComponent>;
   let router: Router;
