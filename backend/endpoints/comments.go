@@ -1,20 +1,63 @@
 package endpoints
 
 import (
-	
 	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
 // getAllComments retrieves all comments from the database.
 func getAllComments(c *gin.Context) {
-	query := `
-		SELECT commentID, userID, showID, timestamp, comment
-		FROM Comments
-	`
+	userIDStr := c.Query("userID")
+	showID := c.Query("showID")
+
+	var query string
+	var args []interface{}
+
+	if userIDStr != "" {
+		userID, err := strconv.Atoi(userIDStr)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if showID != "" {
+			// Get comments for a specific user and show
+			query = `
+				SELECT commentID, userID, showID, timestamp, comment
+				FROM Comments
+				WHERE userID == ? AND showID == ?
+			`
+			args = []interface{}{userID, showID}
+		} else {
+			// Get all comments for a specific user
+			query = `
+				SELECT commentID, userID, showID, timestamp, comment
+				FROM Comments
+				WHERE userID == ?
+			`
+			args = []interface{}{userID}
+		}
+	} else if showID != "" {
+		// Get all comments for a specific show
+		query = `
+			SELECT commentID, userID, showID, timestamp, comment
+			FROM Comments
+			WHERE showID == ?
+		`
+		args = []interface{}{showID}
+	} else {
+		// Get all comments
+		query = `
+			SELECT commentID, userID, showID, timestamp, comment
+			FROM Comments
+		`
+		args = []interface{}{}
+	}
 
 	// Query the database
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, args...)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

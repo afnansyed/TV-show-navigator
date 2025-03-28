@@ -24,10 +24,6 @@ func TestValidateUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Clean up existing users
-	_, err = db.Exec("DELETE FROM Users")
-	assert.NoError(t, err)
-
 	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
@@ -42,6 +38,11 @@ func TestValidateUser(t *testing.T) {
 	encryptedPassword, err := encryption.HashPassword(testUser["password"])
 	assert.NoError(t, err)
 	_, err = db.Exec("INSERT INTO Users (Username, Password) VALUES (?, ?)", testUser["username"], encryptedPassword)
+	assert.NoError(t, err)
+
+	// Get the rowid of the inserted test user
+	var rowid int
+	err = db.QueryRow("SELECT rowid FROM Users WHERE Username = ?", testUser["username"]).Scan(&rowid)
 	assert.NoError(t, err)
 
 	// Create a test request with valid credentials
@@ -79,6 +80,6 @@ func TestValidateUser(t *testing.T) {
 	t.Logf("PASS: Error message for invalid credentials is correct")
 
 	// Clean up - delete the test user
-	_, err = db.Exec("DELETE FROM Users WHERE Username = ?", testUser["username"])
+	_, err = db.Exec("DELETE FROM Users WHERE rowid = ?", rowid)
 	assert.NoError(t, err)
 }

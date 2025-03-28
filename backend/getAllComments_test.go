@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
@@ -25,9 +26,9 @@ func TestGetAllComments(t *testing.T) {
 	// Initialize Gin in test mode
 	gin.SetMode(gin.TestMode)
 
-	// Set up the router
+	// Set up the router with endpoints registered
 	router := gin.Default()
-	router.GET("/comments", getAllComments)
+	endpoints.RegisterEndpoints(router)
 
 	// Create a test request
 	req, _ := http.NewRequest("GET", "/comments", nil)
