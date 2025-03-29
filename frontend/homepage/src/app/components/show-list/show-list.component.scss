@@ -1,0 +1,16 @@
+.card-container {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center;    /* Center the items horizontally */
+  gap: 16px;             /* Spacing between rows */
+  padding: 16px;
+}
+
+.card-item {
+  width: 90%;            /* Make each card take up 80% of the container’s width */
+  max-width: 1200px;      /* Optional max width for larger screens */
+}
+
+.header-title {
+  margin-right: 20px;
+}

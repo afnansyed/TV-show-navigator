@@ -1,34 +1,29 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { CommonModule } from '@angular/common';  // <-- Add CommonModule import
 import { MATERIAL_IMPORTS } from '../../material.imports';
 import { ShowService, Show, ShowFilter } from '../../services/query-shows.service';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { WatchlistService } from '../../services/watchlist.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
+import { NavbarComponent } from '../navbar/navbar.component';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-show-list',
   standalone: true,
-  // Add MatSlideToggleModule and MatButtonModule to the imports array
-  imports: [MATERIAL_IMPORTS, ReactiveFormsModule, MatSlideToggleModule, MatButtonModule],
+  // Note: We no longer need table modules like MatTableDataSource, MatPaginator, or MatSort.
+  imports: [CommonModule, MATERIAL_IMPORTS, ReactiveFormsModule, MatSlideToggleModule, MatButtonModule, NavbarComponent],
   templateUrl: './show-list.component.html',
   styleUrls: ['./show-list.component.scss']
 })
-export class ShowListComponent implements OnInit, AfterViewInit {
-  // Table columns: Title, Rating, Genre, Runtime Minutes, and Actions (toggle)
-  displayedColumns: string[] = ['title', 'rating', 'genre', 'runtimeMinutes', 'actions'];
-  dataSource = new MatTableDataSource<Show>([]);
+export class ShowListComponent implements OnInit {
+  // Instead of using a MatTableDataSource, we use a simple array
+  shows: Show[] = [];
   dataLength = 0;
 
-  // Form for filters (if you use it)
+  // Form for filters remains the same
   filterForm: FormGroup;
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private showService: ShowService,
@@ -38,7 +33,7 @@ export class ShowListComponent implements OnInit, AfterViewInit {
   ) {
     this.filterForm = this.fb.group({
       titleContains: [''],
-      isAdult: [''],         // Expect "TRUE" or "FALSE"
+      isAdult: [''],
       genre: [''],
       startYearStart: [''],
       startYearEnd: [''],
@@ -51,17 +46,12 @@ export class ShowListComponent implements OnInit, AfterViewInit {
     this.loadShows();
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-
   loadShows(filters?: ShowFilter): void {
+    console.log('loadShows called with filters:', filters);
     this.showService.getShows(filters).subscribe({
       next: (data) => {
         console.log('Fetched shows:', data);
-        this.dataSource.data = data;
+        this.shows = data;
         this.dataLength = data.length;
       },
       error: (err) => {
@@ -80,9 +70,13 @@ export class ShowListComponent implements OnInit, AfterViewInit {
     this.loadShows();
   }
 
+  onCardClick(show: Show): void {
+    // For instance, navigate to a details page
+    this.router.navigate(['/show-details', show.tconst]);
+  }
+  
   /**
    * Toggle the watchlist state for a given show.
-   * When the slide toggle changes, add or remove the show from the watchlist.
    */
   toggleWatchlist(event: any, show: Show): void {
     if (event.checked) {
@@ -95,7 +89,7 @@ export class ShowListComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Helper method used in the template to determine if a show is in the watchlist.
+   * Checks if a show is in the watchlist.
    */
   isInWatchlist(show: Show): boolean {
     return this.watchlistService.isInWatchlist(show);
@@ -108,6 +102,9 @@ export class ShowListComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/watchlist']);
   }
 
+  /**
+   * Navigates to the home page.
+   */
   goHome(): void {
     this.router.navigate(['']);
   }

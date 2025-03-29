@@ -1,50 +1,56 @@
-// watchlist.component.ts
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; // for *ngIf, *ngFor
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../material.imports';
 import { WatchlistService } from '../../services/watchlist.service';
 import { Show } from '../../services/query-shows.service';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-watchlist',
   standalone: true,
-  imports: [MATERIAL_IMPORTS, RouterModule],
+  imports: [CommonModule, MATERIAL_IMPORTS, ReactiveFormsModule, RouterModule, NavbarComponent],
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.scss']
 })
-export class WatchlistComponent implements OnInit, AfterViewInit {
-  // Add 'userRating' to the displayed columns
-  displayedColumns: string[] = ['title', 'rating', 'genre', 'runtimeMinutes', 'userRating', 'actions'];
-  dataSource = new MatTableDataSource<Show>([]);
-
-  // List of valid ratings (1 to 10)
+export class WatchlistComponent implements OnInit {
+  // We'll use a simple array to store the watchlist data
+  watchlist: Show[] = [];
   ratings: number[] = [1,2,3,4,5,6,7,8,9,10];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  // Define a filter form (if you wish to filter the watchlist)
+  filterForm: FormGroup;
 
-  constructor(private watchlistService: WatchlistService, private router: Router) {}
-
-  ngOnInit(): void {
-    // Subscribe to the watchlist observable so that any changes update the dataSource
-    this.watchlistService.watchlist$.subscribe((shows: Show[]) => {
-      this.dataSource.data = shows;
+  constructor(
+    public watchlistService: WatchlistService,
+    public router: Router, // change from private to public
+    public fb: FormBuilder
+  ) {
+    // You can define filter controls if needed; otherwise, you may remove this form.
+    this.filterForm = this.fb.group({
+      titleContains: [''],
+      genre: [''],
+      // Add other filter controls as desired.
     });
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngOnInit(): void {
+    // Subscribe to the watchlist observable to update our local watchlist array.
+    this.watchlistService.watchlist$.subscribe((shows: Show[]) => {
+      this.watchlist = shows;
+    });
   }
 
   removeShow(show: Show): void {
     this.watchlistService.removeShow(show);
     console.log(`Removed "${show.title}" from watchlist.`);
+  }
+
+  updateUserRating(show: Show, event: any): void {
+    show.userRating = event.value;
+    // Optionally, update the service to persist changes.
   }
 
   goHome(): void {
@@ -54,10 +60,17 @@ export class WatchlistComponent implements OnInit, AfterViewInit {
   openShowList(): void {
     this.router.navigate(['shows']);
   }
+    // New: Implement filtering actions
+    onFilterApply(): void {
+      const filters = this.filterForm.value;
+      console.log('Filter applied:', filters);
+      // Implement filtering logic as needed.
+      // For example, you could filter the watchlist array or call a service method.
+    }
 
-  updateUserRating(show: Show, event: any): void {
-    show.userRating = event.value;
-    // Optionally, update the watchlistService if you need persistence.
-  }
-
+    onFilterClear(): void {
+      this.filterForm.reset();
+      console.log('Filter cleared');
+      // Optionally reset any filtered data here.
+    }
 }
