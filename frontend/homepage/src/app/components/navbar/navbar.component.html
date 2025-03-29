@@ -16,21 +16,20 @@
       <mat-icon>queue</mat-icon>
       <span class="label">Watchlist</span>
     </button>
-    <button mat-icon-button aria-label="Profile" routerLink="/sign-up">
+    <button mat-icon-button aria-label="Profile" routerLink="/profile">
       <mat-icon>person</mat-icon>
       <span class="label">Profile</span>
     </button>
-
-
-
-
   </div>
 
   <div class="navbar-expandable">
-    <button mat-raised-button color="accent" routerLink="/sign-up">Sign Up</button>
-    <button mat-raised-button color="accent" routerLink="/sign-in">Sign In</button>
+    <ng-container *ngIf="!(userProfile$ | async); else loggedIn">
+      <button mat-raised-button color="accent" routerLink="/sign-up">Sign Up</button>
+      <button mat-raised-button color="accent" routerLink="/sign-in">Sign In</button>
+    </ng-container>
+    <ng-template #loggedIn>
+      <span class="user-name"> {{ (userProfile$ | async)?.username }}</span>
+      <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+    </ng-template>
   </div>
-
 </mat-toolbar>
-
-

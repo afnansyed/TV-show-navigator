@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { CommonModule } from '@angular/common';  // <-- Add CommonModule import
+import { CommonModule } from '@angular/common';
 import { MATERIAL_IMPORTS } from '../../material.imports';
 import { ShowService, Show, ShowFilter } from '../../services/query-shows.service';
-import { WatchlistService } from '../../services/watchlist.service';
+import { AuthService } from '../../services/auth.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { NavbarComponent } from '../navbar/navbar.component';
@@ -12,23 +12,22 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-show-list',
   standalone: true,
-  // Note: We no longer need table modules like MatTableDataSource, MatPaginator, or MatSort.
   imports: [CommonModule, MATERIAL_IMPORTS, ReactiveFormsModule, MatSlideToggleModule, MatButtonModule, NavbarComponent],
   templateUrl: './show-list.component.html',
   styleUrls: ['./show-list.component.scss']
 })
 export class ShowListComponent implements OnInit {
-  // Instead of using a MatTableDataSource, we use a simple array
+  // Use a simple array for the card layout.
   shows: Show[] = [];
   dataLength = 0;
 
-  // Form for filters remains the same
+  // Form for filters remains the same.
   filterForm: FormGroup;
 
   constructor(
     private showService: ShowService,
     private fb: FormBuilder,
-    private watchlistService: WatchlistService,
+    private authService: AuthService, // Replace watchlistService with authService.
     private router: Router
   ) {
     this.filterForm = this.fb.group({
@@ -71,40 +70,34 @@ export class ShowListComponent implements OnInit {
   }
 
   onCardClick(show: Show): void {
-    // For instance, navigate to a details page
+    // Navigate to the show details page
     this.router.navigate(['/show-details', show.tconst]);
   }
-  
+
   /**
-   * Toggle the watchlist state for a given show.
+   * Toggle the watchlist state for a given show using the AuthService.
    */
   toggleWatchlist(event: any, show: Show): void {
     if (event.checked) {
-      this.watchlistService.addShow(show);
+      this.authService.addShowToWatchlist(show);
       console.log(`Added "${show.title}" to watchlist.`);
     } else {
-      this.watchlistService.removeShow(show);
+      this.authService.removeShowFromWatchlist(show);
       console.log(`Removed "${show.title}" from watchlist.`);
     }
   }
 
   /**
-   * Checks if a show is in the watchlist.
+   * Checks if a show is in the watchlist using the AuthService.
    */
   isInWatchlist(show: Show): boolean {
-    return this.watchlistService.isInWatchlist(show);
+    return this.authService.isInWatchlist(show);
   }
 
-  /**
-   * Navigates to the watchlist page.
-   */
   openWatchlist(): void {
     this.router.navigate(['/watchlist']);
   }
 
-  /**
-   * Navigates to the home page.
-   */
   goHome(): void {
     this.router.navigate(['']);
   }
