@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ShowsComponent } from './shows.component';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-
 
 describe('ShowsComponent', () => {
   let component: ShowsComponent;
@@ -11,15 +11,13 @@ describe('ShowsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ShowsComponent],
-      providers: [provideNoopAnimations(),
-        // Provide the regular HttpClient
+      imports: [RouterTestingModule, ShowsComponent],
+      providers: [
+        provideNoopAnimations(),
         provideHttpClient(),
-        // Override it with the testing backend
         provideHttpClientTesting()
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ShowsComponent);
     component = fixture.componentInstance;
