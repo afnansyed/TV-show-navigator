@@ -1,4 +1,4 @@
-# Sprint 2 Report
+# Sprint 3 Report
 
 ## Submission Details
 Git Repo: `https://github.com/afnansyed/TV-show-navigator`
@@ -11,17 +11,37 @@ Instructions to run the project locally, see `README.md` in the root directory
 ## Features Added this Sprint
 ### Frontend:
 
+- Revamped the UI
+    - on homepage:
+        - The navigation bar moved to the left side and is a hover bar. When the mouse is moved on top of it, it expands.
+           - The navigation bar includes a home button, a tv show list button, a watchlist button, a search button, a profile button, a sign up button, and a sign in button. These buttons lead to their respective pages.
+        - Background image
+        - Comments on TV shows (this is a mockup for now)
+        - Popular Tv show posters 
+
 ### Backend:
 
 ## Testing
 ### Frontend:
 - Unit tests:
+  - features component:
+      - Displays the correct paragraph text under heading
+      - Displays the 'Your TV Shows Navigator' logo
+      - Has a language selector to choose from options: English or Spanish
+      - Tests scrolling through the reviews section
+      - Displays the images of the TV Show posters
 
-![unittests](https://github.com/user-attachments/assets/b899d004-6fbb-4959-bc18-e6926433361d)
+  - navbar component:
+      - Has a Home button
+      - Has a Search button
+      - Has a TV Shows button
+      - Routes to TV Shows page when Shows button is clicked
+      - Has a Watchlist button
+      - Routes to Watchlist page when Watchlist button is clicked
+      - Has a Profile button
+      - Shows labels next to their respective icons when the navigation bar expands
 
-- Cypress test:
 
-![cypress test](https://github.com/user-attachments/assets/499b74a7-8312-42bd-8e01-7f9083c2c2a0)
 
     
 ### Backend:
