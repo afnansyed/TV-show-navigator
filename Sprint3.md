@@ -17,7 +17,16 @@ Instructions to run the project locally, see `README.md` in the root directory
            - The navigation bar includes a home button, a tv show list button, a watchlist button, a search button, a profile button, a sign up button, and a sign in button. These buttons lead to their respective pages.
         - Background image
         - Comments on TV shows (this is a mockup for now)
-        - Popular Tv show posters 
+        - Popular Tv show posters
+    - on watchlist page:
+        - Added comment festure that allows users to leave and edit comments on shows.
+        - Adjusted the rating feature
+    - on showlist page:
+        - Reorginized the layout
+        - Cleanup the logic
+- Mock-up backend
+    - Added a mock-up backend to allow the front-end to experiment with features and interactions, this also allows better communication with the back-end regarding the requirements.
+
 
 ### Backend:
 
