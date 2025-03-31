@@ -1,7 +1,7 @@
-// getShowEpisodes_test.go
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -24,10 +24,10 @@ func TestGetShowEpisodes(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Setting up the Gin router
+	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/episodes/:parentTconst", getShowEpisodes)
+	endpoints.RegisterEndpoints(router)
 
 	// Find a valid parentTconst that actually has episodes
 	var parentTconst string

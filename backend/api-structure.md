@@ -44,6 +44,22 @@ List of APIs implemented in `api.go`, their parameters and outputs
   - [Examples](#examples)
   - [Input](#input-9)
   - [Output](#output-9)
+- [/ratings GET](#ratings-get)
+  - [Example](#example-9)
+  - [Input](#input-10)
+  - [Output](#output-10)
+- [/ratings POST](#ratings-post)
+  - [Example](#example-10)
+  - [Input](#input-11)
+  - [Output](#output-11)
+- [/ratings DELETE](#ratings-delete)
+  - [Example](#example-11)
+  - [Input](#input-12)
+  - [Output](#output-12)
+- [/comments](#comments)
+  - [Example](#example-13)
+  - [Input](#input-13)
+  - [Output](#output-13)
 
 # /shows
 ## Example
@@ -213,3 +229,104 @@ The ROWID of the user if found, 500 error if not. JSON in the form:
 {
   rowid: 1
 }
+```
+# /ratings GET
+gets ratings following filter lenses
+## Example
+`http://localhost:8080/ratings?userID=18&showID=tt0035599`
+## Input
+Only one of the following input variables is required
+- userID: id value of user
+- showID: tconst value of show from series table
+## Output
+IF both userID and showID provided:
+- JSON in form
+```json
+{
+  "userID": 18,
+  "showID": "tt0035599",
+  "rating": 9.5,
+}
+```
+- ERROR if no rating found for that user-show pair
+IF only 1 param passed
+- JSON list if filtered by userID
+```json
+[
+  {
+    {
+			"showID": "tt0035599",
+			"rating": 9.5,
+		}
+  }
+]
+```
+- JSON list if filtered by showID
+```json
+[
+  {
+    {
+			"userID": "4",
+			"rating": 9.5,
+		}
+  }
+]
+```
+# /ratings POST
+adds new rating per parameters
+## Example
+`http://localhost:8080/ratings`
+## Input
+A JSON in the form of:
+```json
+{
+  "userID": 18, 
+  "showID": "tt0035599",
+  "ratings": 9.0
+}
+```
+## Output
+200 code, 500 if error
+
+# /ratings DELETE
+deletes existing rating per parameters
+## Example
+`http://localhost:8080/ratings`
+## Input
+A JSON in the form of:
+```json
+{
+  "userID": 18, 
+  "showID": "tt0035599"
+}
+```
+## Output
+200 code with JSON of removed rating
+```json
+{
+  "userID": 18,
+  "showID": "tt0035599",
+  "rating": 9.5
+}
+```
+
+
+# /comments
+displays entires in the comments table
+## Example
+`http://localhost:8080/comments`
+## Input
+- **userID**: INTEGER : OPTIONAL : Filter comments by user ID.
+- **showID**: TEXT : OPTIONAL : Filter comments by show ID.
+## Output
+A JSON list of comments. Each comment contains
+```json
+{
+  "commentID": 1,
+  "userID": 123,
+  "showID": "tt0035599",
+  "timestamp": "2023-01-01 12:00:00",
+  "comment": "This is a great show!"
+}
+```
+```
