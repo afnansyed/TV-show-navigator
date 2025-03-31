@@ -62,6 +62,47 @@ Instructions to run the project locally, see `README.md` in the root directory
 
     
 ### Backend:
+- Unit Tests:
+
+  - getUser endpoint:
+
+    - Tests retrieving user information by ID.
+
+    - Verifies that the response contains the expected user data (username, password).
+
+    - Checks error handling for non-existent user IDs.
+
+  - getAllUsers endpoint:
+
+    - Tests retrieving all users from the database.
+
+    - Verifies that the response contains a list of user data (username, password).
+
+    - Checks for proper handling of an empty user list.
+
+  - deleteUser endpoint:
+
+    - Tests deleting a user by ID.
+
+    - Verifies that the user is successfully removed from the database.
+
+    - Checks error handling for deleting a non-existent user.
+
+  - getAllComments endpoint:
+
+    - Tests retrieving all comments from the database.
+
+    - Verifies that the response contains a list of comments with the correct structure (commentID, userID, showID, timestamp, comment).
+
+    - Checks filtering functionality by user ID or show ID.
+
+  - validateUser endpoint:
+ 
+    - Tests validating user credentials.
+
+    - Verifies that valid credentials return the correct user ID.
+
+    - Checks error handling for invalid credentials.
 
 
 ## API Documentation
