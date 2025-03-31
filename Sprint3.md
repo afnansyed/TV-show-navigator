@@ -29,6 +29,14 @@ Instructions to run the project locally, see `README.md` in the root directory
 
 
 ### Backend:
+- Added tables for ratings, comments, and watchlist to database
+- Added endpoints to GET/POST/DELETE ratings data
+- Added endpoint to read comments table
+- Refactored backend file structure to be more GO-like and less cluttered
+- Added encryption to user passwords
+- Added filter to avoid duplicate usernames
+- Added tests for comments and user endpoints
+- Removed unused api endpoint `/ratings/best`
 
 ## Testing
 ### Frontend:
