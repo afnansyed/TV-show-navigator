@@ -60,7 +60,7 @@ func deleteRating(c *gin.Context) {
 		AND showID == ?
 	`
 	statement := `
-		DELETE *
+		DELETE
 		FROM newRatings
 		WHERE userID == ?
 		AND showID == ?
