@@ -57,6 +57,10 @@ Instructions to run the project locally, see `README.md` in the root directory
       - Routes to Watchlist page when Watchlist button is clicked
       - Has a Profile button
       - Shows labels next to their respective icons when the navigation bar expands
+  - show-list compoment
+      - Apply filters and call loadShows correctly
+      - Correctly add and remove shows to watchlist
+      - Correctly navigate to desired pages
 
 
 
