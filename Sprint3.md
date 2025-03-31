@@ -42,6 +42,8 @@ Instructions to run the project locally, see `README.md` in the root directory
 
 ## Testing
 ### Frontend:
+![image](https://github.com/user-attachments/assets/f8516189-5ed3-4352-bee4-b1e482458b7b)
+
 - Unit tests:
   - features component:
       - Displays the correct paragraph text under heading
