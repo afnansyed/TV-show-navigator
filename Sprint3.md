@@ -4,7 +4,9 @@
 Git Repo: `https://github.com/afnansyed/TV-show-navigator`
 - Due to the size of the sqlite database file, it is excluded from the git repo, but is included in this submission (`./backend/shows.db`) for your convenience.
 
-Links to Demo Video, first half is frontend and the second half is backend - https://www.youtube.com/watch?v=D7JqHaF_gx8
+Links to Demo Video:
+    - Frontend: https://youtu.be/C7LKlE3NZIs
+    - Backend: [https://youtu.be/C7LKlE3NZIs](https://youtu.be/9bt_uORhJ3w)
 
 Instructions to run the project locally, see `README.md` in the root directory
 
