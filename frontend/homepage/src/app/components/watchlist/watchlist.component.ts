@@ -70,9 +70,8 @@ export class WatchlistComponent implements OnInit {
     }
     const comment = prompt(`Edit comment for "${show.title}":`, existingComment);
     if (comment !== null && comment.trim().length > 0) {
-      // Use setComment method if available; otherwise, we call addComment which can append.
-      // Here we'll assume addComment replaces the comment (or you can implement a separate setComment).
-      this.authService.addComment(show, comment);
+      // Replace the existing comment with the new one.
+      this.authService.setComment(show, comment);
       console.log(`Updated comment for "${show.title}" to: ${comment}`);
     }
   }
@@ -95,6 +94,7 @@ export class WatchlistComponent implements OnInit {
       }
     }
   }
+
 
   goHome(): void {
     this.router.navigate(['']);
