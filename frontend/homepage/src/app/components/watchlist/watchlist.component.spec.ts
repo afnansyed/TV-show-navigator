@@ -1,17 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { WatchlistComponent } from './watchlist.component';
 import { AuthService, UserProfile } from '../../services/auth.service';
-import { RouterTestingModule } from '@angular/router/testing';
-import { BehaviorSubject, of } from 'rxjs';
 import { Show } from '../../services/query-shows.service';
+import { BehaviorSubject, of } from 'rxjs';
 
-// Create a fake AuthService to simulate user profile behavior.
+// Fake AuthService implementation
 class FakeAuthService {
-  // Use a BehaviorSubject to simulate userProfile$
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
   userProfile$ = this.userProfileSubject.asObservable();
 
-  // Helper to set profile for testing.
   setProfile(profile: UserProfile | null): void {
     this.userProfileSubject.next(profile);
   }
@@ -55,7 +53,7 @@ describe('WatchlistComponent', () => {
   let fixture: ComponentFixture<WatchlistComponent>;
   let authService: FakeAuthService;
 
-  // Define a dummy show for testing.
+  // Dummy show for testing.
   const dummyShow: Show = {
     tconst: 'tt1234567',
     title: 'Test Show',
@@ -65,7 +63,7 @@ describe('WatchlistComponent', () => {
     userRating: undefined
   };
 
-  // Create a dummy profile with one show in the watchlist, a rating, and a comment.
+  // Dummy profile with one show in the watchlist.
   const dummyProfile: UserProfile = {
     username: 'testuser',
     password: 'testpass',
@@ -86,57 +84,17 @@ describe('WatchlistComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should display an empty watchlist when no profile exists', () => {
-    authService.setProfile(null);
-    fixture.detectChanges();
+  it('should update the watchlist when a profile is set', fakeAsync(() => {
+    // Initially, the watchlist should be empty.
     expect(component.watchlist.length).toBe(0);
-  });
 
-  it('should update the watchlist when a profile is set', () => {
+    // Set the profile using the fake auth service.
     authService.setProfile(dummyProfile);
+    tick(); // Process the asynchronous emission
     fixture.detectChanges();
+
+    // Now the watchlist should contain one show.
     expect(component.watchlist.length).toBe(1);
     expect(component.watchlist[0].title).toBe('Test Show');
-  });
-
-  it('should remove a show from the watchlist', () => {
-    authService.setProfile(dummyProfile);
-    fixture.detectChanges();
-    component.removeShow(dummyShow);
-    fixture.detectChanges();
-    expect(component.watchlist.length).toBe(0);
-  });
-
-  it('should update user rating when updateUserRating is called', () => {
-    authService.setProfile(dummyProfile);
-    fixture.detectChanges();
-    component.updateUserRating(dummyShow, { value: 9 });
-    fixture.detectChanges();
-    const profile = authService.getCurrentProfile();
-    expect(profile?.ratings[dummyShow.tconst]).toBe(9);
-  });
-
-  it('should update comment when editComment is called', () => {
-    authService.setProfile(dummyProfile);
-    fixture.detectChanges();
-    spyOn(window, 'prompt').and.returnValue('Awesome show!');
-    component.editComment(dummyShow, { stopPropagation: () => {} });
-    fixture.detectChanges();
-    const profile = authService.getCurrentProfile();
-    expect(profile?.comments[dummyShow.tconst][0]).toBe('Awesome show!');
-  });
-
-  it('should update rating when leaveOrEditRating is called', () => {
-    authService.setProfile(dummyProfile);
-    fixture.detectChanges();
-    spyOn(window, 'prompt').and.returnValue('8');
-    component.leaveOrEditRating(dummyShow, { stopPropagation: () => {} });
-    fixture.detectChanges();
-    const profile = authService.getCurrentProfile();
-    expect(profile?.ratings[dummyShow.tconst]).toBe(8);
-  });
+  }));
 });

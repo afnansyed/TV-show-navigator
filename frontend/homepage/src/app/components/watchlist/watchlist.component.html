@@ -49,12 +49,6 @@
           </ng-container>
         </mat-card-content>
         <mat-card-actions>
-          <mat-slide-toggle
-            [checked]="isShowInWatchlist(show)"
-            (click)="$event.stopPropagation()"
-            (change)="updateUserRating(show, $event)">
-            User Rating
-          </mat-slide-toggle>
           <button mat-button color="warn" (click)="removeShow(show); $event.stopPropagation()">Remove</button>
           <!-- Rating button: If rating exists, show "Edit Rating", otherwise "Leave Rating" -->
           <ng-container *ngIf="profile.ratings[show.tconst] !== undefined; else leaveRatingTemplate">
