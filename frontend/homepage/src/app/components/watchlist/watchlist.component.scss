@@ -1,0 +1,16 @@
+.card-container {
+  display: flex;
+  flex-direction: column; /* Stack cards vertically */
+  gap: 16px;
+  padding: 16px;
+}
+
+.card-item {
+  width: 90%;            /* Full width of container */
+  max-width: 1200px;       /* Optional: cap width for large screens */
+  margin: 0 auto;         /* Center the card */
+}
+
+.clickable-card {
+  cursor: pointer;
+}

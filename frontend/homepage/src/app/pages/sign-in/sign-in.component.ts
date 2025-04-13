@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../material.imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SignupService, UserValidationResponse } from '../../services/signup.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -17,20 +17,22 @@ export class SignInComponent {
   password: string = '';
   errorMess: string = '';
 
-  constructor(private signupService: SignupService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  onSubmit() {
-    this.signupService.signIn(this.username, this.password)
-      .subscribe({
-        next: (response: UserValidationResponse) => {
-          console.log('User validated, ROWID:', response.rowid);
-          // Navigate or update state as needed
-          this.router.navigate(['/dashboard']);
-        },
-        error: (error) => {
-          this.errorMess = 'Invalid credentials or server error';
-          console.error('Error validating user', error);
+  onSubmit(): void {
+    this.authService.login(this.username, this.password).subscribe({
+      next: (success: boolean) => {
+        if (success) {
+          // Navigate to a dashboard or home page on successful sign-in.
+          this.router.navigate(['/home']);
+        } else {
+          this.errorMess = 'Invalid credentials';
         }
-      });
+      },
+      error: (err) => {
+        this.errorMess = 'Error signing in';
+        console.error('Error signing in:', err);
+      }
+    });
   }
 }

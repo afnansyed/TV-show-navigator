@@ -21,6 +21,18 @@ class SignUpPage {}
 })
 class SignInPage {}
 
+@Component({
+  template: '<div>TV Shows Page</div>',
+  standalone: true
+})
+class ShowsPage {}
+
+@Component({
+  template: '<div>Watchlist Page</div>',
+  standalone: true
+})
+class WatchlistPage {}
+
 describe('navbar component unit test', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
@@ -32,11 +44,15 @@ describe('navbar component unit test', () => {
       imports: [
         RouterTestingModule.withRoutes([
           { path: 'sign-up', component: SignUpPage },
-          { path: 'sign-in', component: SignInPage }
+          { path: 'sign-in', component: SignInPage },
+          { path: 'shows', component: ShowsPage },
+          { path: 'watchlist', component: WatchlistPage }
         ]),
         NavbarComponent,
         SignUpPage,
         SignInPage,
+        ShowsPage,
+        WatchlistPage,
         NoopAnimationsModule,
         ...MATERIAL_IMPORTS
       ]
@@ -53,16 +69,20 @@ describe('navbar component unit test', () => {
     expect(component).toBeTruthy();
   });
 
+  /*
   it('Displays the Your Navigator for TV Shows logo ', () => {
     const logoElement = fixture.debugElement.query(By.css('.logo'));
     expect(logoElement).toBeTruthy();
     expect(logoElement.nativeElement.textContent).toContain('Your Navigator for TV Shows');
   });
+  
 
   it('Has a search bar', () => {
     const searchBar = fixture.debugElement.query(By.css('input[type="search"]'));
     expect(searchBar).toBeTruthy();
   });
+
+  
 
   it('Has a language selector to choose from options: English or Spanish', () => {
     const languageSelect = fixture.debugElement.query(By.css('mat-form-field mat-select'));
@@ -73,6 +93,8 @@ describe('navbar component unit test', () => {
 
     const options = fixture.debugElement.queryAll(By.css('mat-option'));
   });
+
+  */
 
   it('Has a Sign Up button that has sign-up page router link', () => {
     const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
@@ -113,6 +135,74 @@ describe('navbar component unit test', () => {
     
     expect(location.path()).toBe('/sign-in');
   });
+
+
+  it('Has a Home button', () => {
+    const wButton = fixture.debugElement.query(By.css('button[aria-label="Home"]'));
+    expect(wButton).toBeTruthy();
+  });
+
+  it('Has a Search button', () => {
+    const wButton = fixture.debugElement.query(By.css('button[aria-label="Search"]'));
+    expect(wButton).toBeTruthy();
+  });
+
+  it('Has a TV Shows button', () => {
+    const wButton = fixture.debugElement.query(By.css('button[aria-label="Shows"]'));
+    expect(wButton).toBeTruthy();
+  });
+
+  it('Routes to TV Shows page when Shows button is clicked', async () => {
+
+    const showsButton = fixture.debugElement.query(By.css('button[aria-label="Shows"]'));
+    showsButton.nativeElement.click();
+    
+    await fixture.whenStable();
+  
+    expect(location.path()).toBe('/shows');
+  });
+
+  it('Has a Watchlist button', () => {
+    const wButton = fixture.debugElement.query(By.css('button[aria-label="Watchlist"]'));
+    expect(wButton).toBeTruthy();
+  });
+  
+  it('Routes to Watchlist page when Watchlist button is clicked', async () => {
+
+    const wButton = fixture.debugElement.query(By.css('button[aria-label="Watchlist"]'));
+    wButton.nativeElement.click();
+    
+    await fixture.whenStable();
+  
+    expect(location.path()).toBe('/watchlist');
+  });
+
+  it('Has a Profile button', () => {
+    const wButton = fixture.debugElement.query(By.css('button[aria-label="Profile"]'));
+    expect(wButton).toBeTruthy();
+  });
+  
+
+ 
+  it('Shows labels next to their respective icons when the navigation bar expands', () => {
+    const navbarElement = fixture.debugElement.query(By.css('mat-toolbar'));
+    
+    navbarElement.triggerEventHandler('mouseenter', {});
+    fixture.detectChanges();
+    
+    const homeLabel = fixture.debugElement.query(By.css('button[aria-label="Home"] .label')).nativeElement;
+    const searchLabel = fixture.debugElement.query(By.css('button[aria-label="Search"] .label')).nativeElement;
+    const showsLabel = fixture.debugElement.query(By.css('button[aria-label="Shows"] .label')).nativeElement;
+    const watchLabel = fixture.debugElement.query(By.css('button[aria-label="Watchlist"] .label')).nativeElement;
+    const profileLabel = fixture.debugElement.query(By.css('button[aria-label="Profile"] .label')).nativeElement;
+
+    expect(homeLabel.textContent).toContain('Home');
+    expect(searchLabel.textContent).toContain('Search');
+    expect(showsLabel.textContent).toContain('Shows');
+    expect(watchLabel.textContent).toContain('Watchlist');
+    expect(profileLabel.textContent).toContain('Profile');
+  });
+  
 
  
 });

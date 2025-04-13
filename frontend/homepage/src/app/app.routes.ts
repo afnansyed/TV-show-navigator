@@ -6,7 +6,7 @@ import { ShowsComponent } from './pages/shows/shows.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: 'home', component: HomeComponent },
   { path: 'sign-in', component: SignInComponent },
   { path: 'sign-up', component: SignupComponent },
   { path: 'shows', component: ShowsComponent },

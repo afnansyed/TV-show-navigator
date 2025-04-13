@@ -1,24 +1,103 @@
-.user-toolbar-container {
+.navbar-vertical {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
   align-items: center;
-  width: 100%;
-  padding: 10px;
-  gap: 10px; // Adds space between the select and the button
-}
+  height: 60vh; 
+  width: 80px; 
+  //1b7d96b4, 145160b4, 1a6274b4
+  background-color: #145160b4; 
+  transition: width 0.3s ease-in-out; 
+  overflow: visible;  // hidden to visible
+  position: fixed;
+  top: 120px;
+  left: 20px;
+  border-radius: 50px; 
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3); 
+ 
+  .navbar-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; 
+    padding-top: 40px; 
+    gap: 20px;
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
+    button[mat-icon-button] {
+      display: flex;
+      align-items: center; 
+      color: white; 
+      width: 100%;
+      max-width: 100%; 
+      padding: 10px 0; 
+      margin: 0; 
+      justify-content: center; 
+      overflow: visible; 
+    }
 
-  .spacer {
-    flex-grow: 1;
+    button {
+      .mat-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px; 
+        height: 48px; 
+        margin: 0; 
+      }
+      .label {
+        display: none; 
+        font-size: 1rem;
+        white-space: nowrap;
+        line-height: 24px; 
+      }
+    }
   }
 
-  mat-form-field {
-    margin-right: 15px;
-    min-width: 150px;
+  //expand
+  &:hover {
+    width: 200px; 
+    .navbar-content { 
+
+      button {
+        justify-content: flex-start;  
+        .label {
+          display: inline;  
+        }
+      }
+    }
+
+    .navbar-expandable {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      button{
+        width: 100%; 
+        margin: 10px 0; 
+  
+        background-color: transparent; 
+        border: 2px solid #ffffffd4;    
+        color: #ffffffd4;               
+        padding: 10px 20px;    
+
+        &:first-child {
+          margin-top: 20px; 
+        }
+        
+        &:hover {
+          color: #1b7d96; 
+          background-color: rgba(255, 255, 255, 0.947);
+          //color: #3db6d499;
+          transform: scale(1.05);
+          border: 2px solid white;    
+        }
+      }
+    
+    }
   }
+
+
+  .navbar-expandable {
+    display: none; 
+  }
+  
 }

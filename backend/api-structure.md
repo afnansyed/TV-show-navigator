@@ -56,6 +56,10 @@ List of APIs implemented in `api.go`, their parameters and outputs
   - [Example](#example-11)
   - [Input](#input-12)
   - [Output](#output-12)
+- [/comments](#comments)
+  - [Example](#example-13)
+  - [Input](#input-13)
+  - [Output](#output-13)
 
 # /shows
 ## Example
@@ -304,4 +308,25 @@ A JSON in the form of:
   "showID": "tt0035599",
   "rating": 9.5
 }
+```
+
+
+# /comments
+displays entires in the comments table
+## Example
+`http://localhost:8080/comments`
+## Input
+- **userID**: INTEGER : OPTIONAL : Filter comments by user ID.
+- **showID**: TEXT : OPTIONAL : Filter comments by show ID.
+## Output
+A JSON list of comments. Each comment contains
+```json
+{
+  "commentID": 1,
+  "userID": 123,
+  "showID": "tt0035599",
+  "timestamp": "2023-01-01 12:00:00",
+  "comment": "This is a great show!"
+}
+```
 ```

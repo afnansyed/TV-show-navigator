@@ -1,7 +1,7 @@
-// getShows_test.go
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"encoding/json"
 	"net/http"
@@ -24,10 +24,10 @@ func TestGetShows(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Setting up the Gin router
+	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/shows", getShows)
+	endpoints.RegisterEndpoints(router)
 
 	// Test case 1: Default parameters
 	t.Run("Default Parameters", func(t *testing.T) {
