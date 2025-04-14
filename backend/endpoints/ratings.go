@@ -26,7 +26,7 @@ func addRating(c *gin.Context) {
 
 	// modify table to add new user
 	statement := `
-		INSERT INTO newRatings (userID, showID, rating)
+		INSERT OR REPLACE INTO newRatings (userID, showID, rating)
 		VALUES(?, ?, ?)
 	`
 	_, err := db.Exec(statement, newRating.UserID, newRating.ShowID, newRating.Rating)
