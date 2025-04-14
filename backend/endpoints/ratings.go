@@ -206,7 +206,7 @@ func getRatingsFromShow(c *gin.Context, showID string) {
 	//store data to be returned in single obj
 	var ratings []gin.H
 	for rows.Next() {
-		var userID string
+		var userID int
 		var rating float32
 
 		if err = rows.Scan(&userID, &rating); err != nil {
