@@ -56,8 +56,8 @@ List of APIs implemented in `api.go`, their parameters and outputs
   - [Example](#example-11)
   - [Input](#input-12)
   - [Output](#output-12)
-- [/comments](#comments)
-  - [Example](#example-13)
+- [/comments GET](#comments-get)
+  - [Example](#example-12)
   - [Input](#input-13)
   - [Output](#output-13)
 
@@ -309,9 +309,7 @@ A JSON in the form of:
   "rating": 9.5
 }
 ```
-
-
-# /comments
+# /comments GET
 displays entires in the comments table
 ## Example
 `http://localhost:8080/comments`
@@ -328,5 +326,4 @@ A JSON list of comments. Each comment contains
   "timestamp": "2023-01-01 12:00:00",
   "comment": "This is a great show!"
 }
-```
 ```
