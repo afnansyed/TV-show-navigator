@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss'],
-  imports: [CommonModule, MATERIAL_IMPORTS, FormsModule],
+  imports: [CommonModule, RouterModule, ...MATERIAL_IMPORTS, FormsModule],
   standalone: true
 })
 export class SignInComponent {
