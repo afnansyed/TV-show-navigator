@@ -39,19 +39,8 @@ func addRating(c *gin.Context) {
 }
 
 func deleteRating(c *gin.Context) {
-	type UserShow struct {
-		// json tag to de-serialize json body
-		UserID int    `json:"userID"`
-		ShowID string `json:"showID"`
-	}
-
-	var userShow UserShow
-
-	// Call BindJSON to bind the received JSON to struct
-	if err := c.BindJSON(&userShow); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	userID := c.Query("userID")
+	showID := c.Query("showID")
 
 	query := `
 		SELECT rating
@@ -66,7 +55,7 @@ func deleteRating(c *gin.Context) {
 		AND showID == ?
 	`
 	//query row data to be deleted
-	rows, err := db.Query(query, userShow.UserID, userShow.ShowID)
+	rows, err := db.Query(query, userID, showID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -82,13 +71,13 @@ func deleteRating(c *gin.Context) {
 	rows.Close()
 
 	//delete row
-	_, err = db.Exec(statement, userShow.UserID, userShow.ShowID)
+	_, err = db.Exec(statement, userID, showID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"userID": userShow.UserID, "showID": userShow.ShowID, "rating": rating})
+	c.JSON(http.StatusOK, gin.H{"userID": userID, "showID": showID, "rating": rating})
 }
 
 func getRatings(c *gin.Context) {
