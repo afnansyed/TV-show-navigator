@@ -299,17 +299,12 @@ A JSON in the form of:
 # /ratings DELETE
 deletes existing rating per parameters
 ## Example
-`http://localhost:8080/ratings`
+`http://localhost:8080/ratings?userID=18&showID=tt0035599`
 ## Input
-A JSON in the form of:
-```json
-{
-  "userID": 18, 
-  "showID": "tt0035599"
-}
-```
+userID : INTEGER : id of user who made the rating
+showID : TEXT : id of show that was rated
 ## Output
-200 code with JSON of removed rating
+200 code with JSON of removed rating, 500 otherwise
 ```json
 {
   "userID": 18,
