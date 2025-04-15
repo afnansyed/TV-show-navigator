@@ -60,6 +60,14 @@ List of APIs implemented in `api.go`, their parameters and outputs
   - [Example](#example-12)
   - [Input](#input-13)
   - [Output](#output-13)
+- [/comments POST](#comments-post)
+  - [Example](#example-13)
+  - [Input](#input-14)
+  - [Output](#output-14)
+- [/comments DELETE](#comments-delete)
+  - [Example](#example-14)
+  - [Input](#input-15)
+  - [Output](#output-15)
 
 # /shows
 ## Example
@@ -312,7 +320,7 @@ A JSON in the form of:
 # /comments GET
 displays entires in the comments table
 ## Example
-`http://localhost:8080/comments`
+`http://localhost:8080/comments?showID=ttfakeShow&userID=100`
 ## Input
 - **userID**: INTEGER : OPTIONAL : Filter comments by user ID.
 - **showID**: TEXT : OPTIONAL : Filter comments by show ID.
@@ -321,6 +329,37 @@ A JSON list of comments. Each comment contains
 ```json
 {
   "commentID": 1,
+  "userID": 123,
+  "showID": "tt0035599",
+  "timestamp": "2023-01-01 12:00:00",
+  "comment": "This is a great show!"
+}
+```
+# /comments POST
+adds a comment to the db table
+## Example
+`http://localhost:8080/comments`
+## Input
+```json
+{
+  "userID": 1,
+  "showID": "ttfakeShow",
+  "comment": "this is what I want to say"
+}
+```
+## Output
+200 on success, 500 for error
+# /comments DELETE
+removes a comment from database
+## Example
+`http://localhost:8080/comments?id=1234`
+## Input
+id : INTEGER : number that corresponds to the unique commentID field in the database
+## Output
+the deleted row in JSON form
+```json
+{
+  "commentID": 1234,
   "userID": 123,
   "showID": "tt0035599",
   "timestamp": "2023-01-01 12:00:00",
