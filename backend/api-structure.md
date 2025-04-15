@@ -68,6 +68,17 @@ List of APIs implemented in `api.go`, their parameters and outputs
   - [Example](#example-14)
   - [Input](#input-15)
   - [Output](#output-15)
+- [/watchlist GET](#watchlist-get)
+  - [Example](#example-15)
+  - [Input](#input-16)
+  - [Output](#output-16)
+- [/watchlist POST](#watchlist-post)
+  - [Example](#example-16)
+  - [Input](#input-17)
+  - [Output](#output-17)
+- [/watchlist DELETE](#watchlist-delete)
+  - [Input](#input-18)
+  - [Output](#output-18)
 
 # /shows
 ## Example
@@ -359,5 +370,85 @@ the deleted row in JSON form
   "showID": "tt0035599",
   "timestamp": "2023-01-01 12:00:00",
   "comment": "This is a great show!"
+}
+```
+# /watchlist GET
+get watchlists and watchingstatuses for users and/or shows
+## Example
+`http://localhost:8080/watchlist`
+`http://localhost:8080/watchlist?userID=1234`
+`http://localhost:8080/watchlistshowID=ttfakeShow`
+`http://localhost:8080/watchlist?userID=1234&showID=ttfakeShow`
+## Input
+userID : INTEGER : OPTIONAL : id of user who owns the status
+showID : string : OPTIONAL : id of show belonging to the status
+## Output
+output JSON depends on input parameters:
+[see database docs for status codes](database-structure.md#watchingstatus)
+```json
+//no input params -> returns all watching statuses, ordered by userID
+[
+  {
+    "userID":1,
+    "showID":"ttfakeShow",
+    "status":1
+  }
+]
+
+//only userID provided -> returns watchlist for that userID
+[
+  {
+    "showID":"ttfakeShow",
+    "status":1
+  }
+]
+
+//only showID provided -> returns users with watchstatus for that show
+[
+  {
+    "userID":1,
+    "status":1
+  }
+]
+
+//both input params -> returns the status (if it exists) between that user and show
+[
+  {
+    "userID":1,
+    "showID":"ttfakeShow",
+    "status":1
+  }
+]
+```
+# /watchlist POST
+adds or updates watchlist status
+## Example
+`http://localhost:8080/watchlist`
+## Input
+```json
+{
+  "userID":1,
+  "showID":"ttfakeShow",
+  "status":2
+}
+```
+## Output
+200 code if success, 500 otherwise
+# /watchlist DELETE
+removes status from db, for a given show and user ID
+## Input
+```json
+{
+  "userID":1,
+  "showID":"ttfakeShow"
+}
+```
+## Output
+the row of data removed from the db
+```json
+{
+  "userID":1,
+  "showID":"ttfakeShow",
+  "status":2
 }
 ```
