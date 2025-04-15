@@ -77,7 +77,13 @@ func deleteStatus(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"userID": userID, "showID": showID, "status": status})
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"userID": userIDInt, "showID": showID, "status": status})
 }
 
 func getWatchlist(c *gin.Context) {

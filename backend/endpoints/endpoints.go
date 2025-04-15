@@ -35,6 +35,10 @@ func RegisterEndpoints(router *gin.Engine) {
 	router.POST("/comments", addComment)
 	router.DELETE("/comments", deleteComment)
 
+	router.GET("/watchlist", getWatchlist)
+	router.POST("/watchlist", addStatus)
+	router.DELETE("/watchlist", deleteStatus)
+
 }
 
 func CloseDB() {
