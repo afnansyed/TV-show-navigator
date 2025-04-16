@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';  // Use the AuthService instead of SignupService
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],  // Correct property name is styleUrls
-  imports: [CommonModule, MATERIAL_IMPORTS, FormsModule],
+  imports: [CommonModule, RouterModule, ...MATERIAL_IMPORTS, FormsModule],
   standalone: true
 })
 export class SignupComponent {
