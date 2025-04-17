@@ -1,14 +1,15 @@
-
 package main
 
 import (
+	"backend/endpoints"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"database/sql"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,16 +23,16 @@ func TestGetShowCount(t *testing.T) {
 	}
 	defer db.Close()
 
-	// setting up the Gin router
+	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/shows/count", getShowCount)
+	endpoints.RegisterEndpoints(router)
 
 	// Creating a test request
 	req, _ := http.NewRequest("GET", "/shows/count", nil)
 	resp := httptest.NewRecorder()
 	
-	// serving the request
+	// Serving the request
 	router.ServeHTTP(resp, req)
 
 	// Checking the response status code
@@ -49,6 +50,4 @@ func TestGetShowCount(t *testing.T) {
 	t.Logf("PASS: Response contains COUNT field")
 	assert.GreaterOrEqual(t, count, 0, "COUNT should be a non-negative number")
 	t.Logf("PASS: COUNT is a non-negative number (actual: %d)", count)
-	
-	
 }

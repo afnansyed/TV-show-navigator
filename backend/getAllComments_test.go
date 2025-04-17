@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +17,7 @@ import (
 func TestGetAllComments(t *testing.T) {
 	// Initialize the database connection
 	var err error
-	db, err = sql.Open("sqlite3", "shows.db") // Using latest db file
+	db, err = sql.Open("sqlite3", "shows.db") // Use your actual database file
 	if err != nil {
 		t.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -25,9 +26,9 @@ func TestGetAllComments(t *testing.T) {
 	// Initialize Gin in test mode
 	gin.SetMode(gin.TestMode)
 
-	// Set up the router
+	// Set up the router with endpoints registered
 	router := gin.Default()
-	router.GET("/comments", getAllComments)
+	endpoints.RegisterEndpoints(router)
 
 	// Create a test request
 	req, _ := http.NewRequest("GET", "/comments", nil)

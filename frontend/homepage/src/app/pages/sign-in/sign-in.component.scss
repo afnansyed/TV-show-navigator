@@ -1,26 +1,60 @@
 // sign-in.component.scss
+@import url('https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Playfair+Display:wght@700&display=swap');
+
 .sign-in-container {
+  position: relative;
   display: flex;
   justify-content: center;
-  gap: 20px;
-  padding: 40px;
-  flex-wrap: wrap;
+  align-items: center;
+  height: 100vh;
+  background-image: url('/fr.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
-  mat-card{
-    background: linear-gradient(to bottom, #4f60c0, #2196f3);
+  .navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: 80px;
+    background: transparent;
+    box-shadow: none;
+    padding: 0 40px;
+
+    .logo {
+      font-family: 'Darumadrop One', cursive;
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: white;
+      margin: 0;
+    }
+
+    .spacer {
+      flex-grow: 1;
+    }
+  }
+
+  .sign-in {
+    width: 300px;
+    padding: 20px;
+    //#14516095 
+    background:  #90a5aab2;
     color: white;
   }
+
   mat-card-title {
     text-align: center;
-    font-size: 2.0rem;
+    font-size: 2rem;
     font-weight: bold;
-    margin-bottom: 20px; 
+    //font-family: 'Quattrocento', serif;
+    margin-bottom: 20px;
+    //font-style: italic;
   }
 
   mat-card-content {
-    display: flex;
-    flex-direction: column;
-    
     form {
       display: flex;
       flex-direction: column;
@@ -31,13 +65,14 @@
 
       input {
         border-radius: 5px;
-        border-style: none ;
+        border-style: none;
         margin-bottom: 10px;
       }
 
       button {
-        align-self: flex-end; 
+        align-self: flex-end;
         margin-top: 10px;
+        color: #145160f9;
       }
     }
   }
@@ -60,20 +95,18 @@
   }
   
   .navbar {
-    display: flex;
-    justify-content:space-between;
-    align-items: center;
-    padding: 10px;
-    background: linear-gradient(to right, #3f51b5, #2196f3);
-    color: white;
-    .spacer {
-      flex-grow: 1;
-    }
-  
-    mat-form-field {
-      margin-right: 15px;
-      min-width: 150px;
-      
+    background-color: transparent;
+    box-shadow: none;
+    color: rgb(45, 37, 37);
+    text-align: center;
+    width: 100%;
+    .logo {
+      font-family: 'Darumadrop One', cursive;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 3rem;
+      display: inline-block;
     }
   }
+
   

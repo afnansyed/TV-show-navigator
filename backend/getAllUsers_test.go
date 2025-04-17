@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/endpoints"
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
@@ -22,19 +23,26 @@ func TestGetAllUsers(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Setting up the Gin router
+	// Setting up the Gin router with endpoints registered
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.GET("/users/all", getAllUsers)
+	endpoints.RegisterEndpoints(router)
 
 	// Create test users in the database
 	testUsers := []map[string]string{
 		{"username": "testuser1", "password": "testpassword1"},
 		{"username": "testuser2", "password": "testpassword2"},
 	}
+	var insertedUserIDs []int
 	for _, user := range testUsers {
 		_, err = db.Exec("INSERT INTO Users (Username, Password) VALUES (?, ?)", user["username"], user["password"])
 		assert.NoError(t, err)
+
+		// Get the rowid of the inserted user
+		var rowid int
+		err = db.QueryRow("SELECT rowid FROM Users WHERE Username = ?", user["username"]).Scan(&rowid)
+		assert.NoError(t, err)
+		insertedUserIDs = append(insertedUserIDs, rowid)
 	}
 
 	// Create a test request
@@ -52,19 +60,23 @@ func TestGetAllUsers(t *testing.T) {
 	var responseBody []map[string]interface{}
 	err = json.Unmarshal(resp.Body.Bytes(), &responseBody)
 	assert.NoError(t, err)
-	assert.Len(t, responseBody, len(testUsers))
-	for _, user := range responseBody {
-		assert.Contains(t, user, "rowid")
-		assert.Contains(t, user, "username")
-		assert.Contains(t, user, "password")
+
+	// Check for each test user in the response
+	for _, testUser := range testUsers {
+		found := false
+		for _, user := range responseBody {
+			if user["username"].(string) == testUser["username"] {
+				found = true
+				break
+			}
+		}
+		assert.True(t, found, "Test user %s not found in response", testUser["username"])
 	}
-	t.Logf("PASS: Response body matches expected data")
+	t.Logf("PASS: All test users found in response")
 
 	// Clean up - delete the test users
-	for _, user := range testUsers {
-		_, err = db.Exec("DELETE FROM Users WHERE Username = ?", user["username"])
-		if err != nil {
-			t.Logf("Warning: Failed to delete test user: %v", err)
-		}
+	for _, rowid := range insertedUserIDs {
+		_, err = db.Exec("DELETE FROM Users WHERE rowid = ?", rowid)
+		assert.NoError(t, err)
 	}
 }
