@@ -1,22 +1,108 @@
-<div class="features-container">
-  <mat-card class="feature">
-    <mat-card-title>Your persoal TV show guide</mat-card-title>
-    <mat-card-content>
-      <p>Get personal recommendations tailored to you . We’ll show you where to watch your favorite shows.</p>
-    </mat-card-content>
-  </mat-card>
 
-  <mat-card class="feature">
-    <mat-card-title>Create your own watchlist</mat-card-title>
-    <mat-card-content>
-      <p>Create watchlist with shows you want to watch .</p>
-    </mat-card-content>
-  </mat-card>
+  <link href="https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Darumadrop+One&family=Playfair+Display:wght@700&family=Abril+Fatface&family=Fredoka+One&display=swap" rel="stylesheet">
 
-  <mat-card class="feature">
-    <mat-card-title>Every Show in One Search</mat-card-title>
-    <mat-card-content>
-      <p>Never go back and forth between platforms again to see if a show is available.</p>
-    </mat-card-content>
-  </mat-card>
-</div>
+  <div class="features-container">
+    <div class="hero-section">
+
+      <div class="hero-container">
+        <h1>Your TV Shows Navigator</h1> 
+      </div>
+  
+      <mat-form-field appearance="outline" class="language-selector">
+        <mat-label>Language</mat-label>
+        <mat-select>
+          <mat-option value="en">English</mat-option>
+          <mat-option value="es">Español</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+    </div>
+
+    <div class="page-head">
+    <p> Discover your next favorite show, add it to your watchlist, and share your thoughts with others. <br>Let us guide your TV journey!</p>
+    <!--<button mat-raised-button color="accent" routerLink="/sign-up">Sign Up</button>
+    <button mat-raised-button color="accent" routerLink="/sign-in">Sign In</button>-->
+  </div>
+
+    <div class="reviews-container">
+      <div class="reviews-title">Recent Reviews</div>
+
+      <div class="reviews-box">
+        <div class="reviews-scrollable">
+
+          <div class="review">
+            <div class="review-header">
+              <h3 class="show-title">Severance</h3>
+              <div class="user-info">
+                <span class="username">martinscorsese</span>
+                <div class="rating">4.5/5</div>
+              </div>
+            </div>
+            <p>I can't remember the last time I was so invested in a TV show. I was hooked from the first episode!</p>
+          </div>
+
+          <div class="review">
+            <div class="review-header">
+              <h3 class="show-title">Succession</h3>
+              <div class="user-info">
+                <span class="username">housetargaryen</span>
+                <div class="rating">5/5</div>
+              </div>
+            </div>
+            <p>Wow, this show is incredible!</p>
+          </div>
+
+          <div class="review">
+            <div class="review-header">
+              <h3 class="show-title">Solo Leveling</h3>
+              <div class="user-info">
+                <span class="username">harrypotter</span>
+                <div class="rating">4/5</div>
+              </div>
+            </div>
+            <p>Highly recommend!</p>
+          </div>
+
+          <div class="review">
+            <div class="review-header">
+              <h3 class="show-title">The White Lotus</h3>
+              <div class="user-info">
+                <span class="username">muffinman</span>
+                <div class="rating">4.5/5</div>
+              </div>
+            </div>
+            <p>I really liked the first season, but I LOVED the second. I am obsessed about season 2.</p>
+          </div>
+
+          <div class="review">
+            <div class="review-header">
+              <h3 class="show-title">The Last of Us</h3>
+              <div class="user-info">
+                <span class="username">cordyceps</span>
+                <div class="rating">3.5/5</div>
+              </div>
+            </div>
+            <p>Dark and gritty. I enjoyed it more than I thought I would. Good attempt at adapting the game.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    
+  </div>
+
+  <div class="popular-shows-section">
+    <h2 class="section-title">Popular TV Shows</h2>
+    <div class="images">
+      <img src="/su.jpg" alt="Severance"/>
+      <img src="/p.jpg" alt="The Penguin"/>
+      <img src="/true.jpg" alt="True Detective"/>
+      <img src="/cher.jpg" alt="Chernobyl"/>
+
+    </div>
+  </div>
+

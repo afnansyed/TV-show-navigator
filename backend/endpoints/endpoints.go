@@ -30,7 +30,14 @@ func RegisterEndpoints(router *gin.Engine) {
 	router.GET("/ratings", getRatings)
 	router.POST("/ratings", addRating)
 	router.DELETE("/ratings", deleteRating)
-	router.GET("/comments", getAllComments)
+
+	router.GET("/comments", getComments)
+	router.POST("/comments", addComment)
+	router.DELETE("/comments", deleteComment)
+
+	router.GET("/watchlist", getWatchlist)
+	router.POST("/watchlist", addStatus)
+	router.DELETE("/watchlist", deleteStatus)
 
 }
 

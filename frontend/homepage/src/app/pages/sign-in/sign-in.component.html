@@ -1,15 +1,19 @@
-<mat-toolbar color="primary" class="navbar">
-  <span class="logo">Your Navigator for TV Shows</span>
-  <span class="spacer"></span>
+<link href="https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Darumadrop+One&family=Playfair+Display:wght@700&family=Abril+Fatface&family=Fredoka+One&display=swap" rel="stylesheet">
 
- 
-</mat-toolbar>
+
 
 
 
 <div class="sign-in-container">
+
+  <mat-toolbar class="navbar">
+    <span class="logo" routerLink="/home">Your Navigator for TV Shows</span>
+    <span class="spacer"></span>
+   
+  </mat-toolbar>
+
   <mat-card class="sign-in">
-    <mat-card-title>SIGN IN</mat-card-title>
+    <mat-card-title>Welcome Back!</mat-card-title>
       <mat-card-content>
         <form (ngSubmit)="onSubmit()">
           <label for="username">Username:</label>

@@ -7,29 +7,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// insert new rating or update existing rating in db
-func addRating(c *gin.Context) {
-	type Rating struct {
+// insert new status or update existing status in db
+func addStatus(c *gin.Context) {
+	type WatchStatus struct {
 		// json tag to de-serialize json body
 		UserID int     `json:"userID"`
 		ShowID string  `json:"showID"`
-		Rating float32 `json:"rating"`
+		Status float32 `json:"status"`
 	}
 
-	var newRating Rating
+	var newStatus WatchStatus
 
 	// Call BindJSON to bind the received JSON to struct
-	if err := c.BindJSON(&newRating); err != nil {
+	if err := c.BindJSON(&newStatus); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// modify table to add new rating
+	// modify table to add/replace status
 	statement := `
-		INSERT OR REPLACE INTO newRatings (userID, showID, rating)
+		INSERT OR REPLACE INTO WatchingStatus (userID, showID, status)
 		VALUES(?, ?, ?)
 	`
-	_, err := db.Exec(statement, newRating.UserID, newRating.ShowID, newRating.Rating)
+	_, err := db.Exec(statement, newStatus.UserID, newStatus.ShowID, newStatus.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -38,19 +38,19 @@ func addRating(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func deleteRating(c *gin.Context) {
+func deleteStatus(c *gin.Context) {
 	userID := c.Query("userID")
 	showID := c.Query("showID")
 
 	query := `
-		SELECT rating
-		FROM newRatings
+		SELECT status
+		FROM WatchingStatus
 		WHERE userID == ?
 		AND showID == ?
 	`
 	statement := `
 		DELETE
-		FROM newRatings
+		FROM WatchingStatus
 		WHERE userID == ?
 		AND showID == ?
 	`
@@ -62,9 +62,9 @@ func deleteRating(c *gin.Context) {
 	}
 
 	//store data to be deleted
-	var rating float32
+	var status int
 	rows.Next()
-	if err = rows.Scan(&rating); err != nil {
+	if err = rows.Scan(&status); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -83,10 +83,10 @@ func deleteRating(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"userID": userIDInt, "showID": showID, "rating": rating})
+	c.JSON(http.StatusOK, gin.H{"userID": userIDInt, "showID": showID, "status": status})
 }
 
-func getRatings(c *gin.Context) {
+func getWatchlist(c *gin.Context) {
 	userID := c.Query("userID")
 	showID := c.Query("showID")
 
@@ -100,24 +100,63 @@ func getRatings(c *gin.Context) {
 
 		if showID != "" {
 			//if both defined, get single rating
-			getRating(c, userIDInt, showID)
+			getWatchingStatus(c, userIDInt, showID)
 		} else {
 			//just get all ratings for that user
-			getRatingsFromUser(c, userIDInt)
+			getWatchlistFromUser(c, userIDInt)
 		}
 	} else if showID != "" {
 		//if only showID defined, get all ratings of that show
-		getRatingsFromShow(c, showID)
+		getWatchingStatusesForShow(c, showID)
 	} else {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "neither userID nor showID provided"})
-		return
+		getAllWatchlists(c)
 	}
 }
 
-func getRating(c *gin.Context, userID int, showID string) {
+func getAllWatchlists(c *gin.Context) {
 	query := `
-		SELECT rating
-		FROM newRatings
+	SELECT userID, showID, status
+	FROM WatchingStatus
+	ORDER BY userID
+`
+
+	//query row data to be deleted
+	rows, err := db.Query(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	//store data to be returned in single obj
+	var watchingStatuses []gin.H
+
+	for rows.Next() {
+		var (
+			userID int
+			showID string
+			status int
+		)
+
+		if err = rows.Scan(&userID, &showID, &status); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		watchingStatuses = append(watchingStatuses, gin.H{
+			"userID": userID,
+			"showID": showID,
+			"status": status,
+		})
+	}
+
+	c.JSON(http.StatusOK, watchingStatuses)
+}
+
+func getWatchingStatus(c *gin.Context, userID int, showID string) {
+	query := `
+		SELECT status
+		FROM WatchingStatus
 		WHERE userID == ?
 		AND showID == ?
 	`
@@ -130,28 +169,27 @@ func getRating(c *gin.Context, userID int, showID string) {
 	}
 	defer rows.Close()
 
-	//store data to be returned in single obj
-	var ratingVal float32
+	var status int
 
 	rows.Next()
-	if err = rows.Scan(&ratingVal); err != nil {
+	if err = rows.Scan(&status); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	rating := gin.H{
+	watchingStatus := gin.H{
 		"userID": userID,
 		"showID": showID,
-		"rating": ratingVal,
+		"status": status,
 	}
 
-	c.JSON(http.StatusOK, rating)
+	c.JSON(http.StatusOK, watchingStatus)
 }
 
-func getRatingsFromUser(c *gin.Context, userID int) {
+func getWatchlistFromUser(c *gin.Context, userID int) {
 	query := `
-		SELECT showID, rating
-		FROM newRatings
+		SELECT showID, status
+		FROM WatchingStatus
 		WHERE userID == ?
 	`
 
@@ -164,29 +202,29 @@ func getRatingsFromUser(c *gin.Context, userID int) {
 	defer rows.Close()
 
 	//store data to be returned in single obj
-	var ratings []gin.H
+	var watchlist []gin.H
 	for rows.Next() {
 		var showID string
-		var rating float32
+		var status int
 
-		if err = rows.Scan(&showID, &rating); err != nil {
+		if err = rows.Scan(&showID, &status); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ratings = append(ratings, gin.H{
+		watchlist = append(watchlist, gin.H{
 			"showID": showID,
-			"rating": rating,
+			"status": status,
 		})
 	}
 
-	c.JSON(http.StatusOK, ratings)
+	c.JSON(http.StatusOK, watchlist)
 }
 
-func getRatingsFromShow(c *gin.Context, showID string) {
+func getWatchingStatusesForShow(c *gin.Context, showID string) {
 	query := `
-		SELECT userID, rating
-		FROM newRatings
+		SELECT userID, status
+		FROM WatchingStatus
 		WHERE showID == ?
 	`
 
@@ -199,21 +237,21 @@ func getRatingsFromShow(c *gin.Context, showID string) {
 	defer rows.Close()
 
 	//store data to be returned in single obj
-	var ratings []gin.H
+	var statuses []gin.H
 	for rows.Next() {
 		var userID int
-		var rating float32
+		var status int
 
-		if err = rows.Scan(&userID, &rating); err != nil {
+		if err = rows.Scan(&userID, &status); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ratings = append(ratings, gin.H{
+		statuses = append(statuses, gin.H{
 			"userID": userID,
-			"rating": rating,
+			"status": status,
 		})
 	}
 
-	c.JSON(http.StatusOK, ratings)
+	c.JSON(http.StatusOK, statuses)
 }

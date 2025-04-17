@@ -1,66 +1,76 @@
-<div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background-color: #3f51b5; color: white;">
-  <h3 style="margin-left: 20px; font-weight: lighter;" routerLink="" (click)="goHome()">Your Navigator for TV Shows</h3>
+<!-- Navbar -->
+<app-navbar></app-navbar>
+
+<!-- Header -->
+<div class="header" style="display: flex; justify-content: space-between; align-items: center; background-color: #3f51b5; color: white; padding: 16px;">
+  <h3 style="margin-left: 20px; font-weight: lighter; cursor: pointer;" (click)="goHome()">Your Navigator for TV Shows</h3>
   <h1>TV Show Watch List</h1>
-  <button mat-raised-button color="accent" style="margin-right: 20px;" routerLink="shows" (click)="openShowList()">Shows</button>
-  <button mat-raised-button color="accent" style="margin-right: 20px;">Profile</button>
+  <div>
+    <button mat-raised-button color="accent" style="margin-right: 20px;" (click)="openShowList()">Shows</button>
+    <button mat-raised-button color="accent" style="margin-right: 20px;">Profile</button>
+  </div>
 </div>
 
-<div class="watchlist-container">
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-    <!-- Title Column -->
-    <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef>Title</th>
-      <td mat-cell *matCellDef="let show">{{ show.title }}</td>
-    </ng-container>
-
-    <!-- Rating Column (from backend) -->
-    <ng-container matColumnDef="rating">
-      <th mat-header-cell *matHeaderCellDef>Rating</th>
-      <td mat-cell *matCellDef="let show">{{ show.rating }}</td>
-    </ng-container>
-
-    <!-- Genre Column -->
-    <ng-container matColumnDef="genre">
-      <th mat-header-cell *matHeaderCellDef>Genre</th>
-      <td mat-cell *matCellDef="let show">{{ show.genre }}</td>
-    </ng-container>
-
-    <!-- Runtime Minutes Column -->
-    <ng-container matColumnDef="runtimeMinutes">
-      <th mat-header-cell *matHeaderCellDef>Runtime (min)</th>
-      <td mat-cell *matCellDef="let show">{{ show.runtimeMinutes }}</td>
-    </ng-container>
-
-    <!-- User Rating Column -->
-    <ng-container matColumnDef="userRating">
-      <th mat-header-cell *matHeaderCellDef>User Rating</th>
-      <td mat-cell *matCellDef="let show">
-        <div class="slider-container">
-          <mat-slider
-          min="1" max="10" step="1"
-          discrete
-          showTickMarks
-          (change)="updateUserRating(show, $event)">
-          <input matSliderThumb>
-          </mat-slider>
-      </div>
-      </td>
-    </ng-container>
-
-    <!-- Actions Column -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let show">
-        <button mat-button color="warn" (click)="removeShow(show)">Remove</button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-
-  <!-- Optionally add a message if the watchlist is empty -->
-  <div *ngIf="dataSource.data.length === 0" style="margin-top: 20px;">
-    Your watchlist is empty.
+<!-- Filter Form (optional) -->
+<form [formGroup]="filterForm" (ngSubmit)="onFilterApply()">
+  <div style="display: flex; justify-content: center; gap: 16px; margin: 26px 20px;">
+    <p style="font-weight: bold;">BROWSE BY:</p>
+    <mat-form-field appearance="fill">
+      <mat-label>TITLE</mat-label>
+      <input matInput placeholder="Enter title" formControlName="titleContains">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>GENRE</mat-label>
+      <input matInput placeholder="Enter genre" formControlName="genre">
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
+    <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
   </div>
+</form>
+
+<!-- Card Layout -->
+<ng-container *ngIf="authService.userProfile$ | async as profile">
+  <div class="card-container">
+    <div class="card-item" *ngFor="let show of watchlist">
+      <mat-card class="clickable-card" (click)="router.navigate(['/show-details', show.tconst])">
+        <mat-card-header>
+          <mat-card-title>{{ show.title }}</mat-card-title>
+          <mat-card-subtitle>{{ show.genre }} | {{ show.runtimeMinutes }} min</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Rating: {{ show.rating }}</p>
+          <!-- Display the user's rating if it exists -->
+          <ng-container *ngIf="profile.ratings[show.tconst] !== undefined">
+            <p><strong>Your Rating:</strong> {{ profile.ratings[show.tconst] }}</p>
+          </ng-container>
+          <!-- Display comment if one exists -->
+          <ng-container *ngIf="profile.comments[show.tconst] && profile.comments[show.tconst].length > 0">
+            <p><strong>Comment:</strong> {{ profile.comments[show.tconst][0] }}</p>
+          </ng-container>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="warn" (click)="removeShow(show); $event.stopPropagation()">Remove</button>
+          <!-- Rating button: If rating exists, show "Edit Rating", otherwise "Leave Rating" -->
+          <ng-container *ngIf="profile.ratings[show.tconst] !== undefined; else leaveRatingTemplate">
+            <button mat-button color="primary" (click)="leaveOrEditRating(show, $event); $event.stopPropagation()">Edit Rating</button>
+          </ng-container>
+          <ng-template #leaveRatingTemplate>
+            <button mat-button color="primary" (click)="leaveOrEditRating(show, $event); $event.stopPropagation()">Leave Rating</button>
+          </ng-template>
+          <!-- Comment buttons: if a comment exists, show "Edit Comment"; otherwise, "Leave Comment" -->
+          <ng-container *ngIf="profile.comments[show.tconst] && profile.comments[show.tconst].length > 0; else leaveCommentTemplate">
+            <button mat-button color="primary" (click)="editComment(show, $event); $event.stopPropagation()">Edit Comment</button>
+          </ng-container>
+          <ng-template #leaveCommentTemplate>
+            <button mat-button color="primary" (click)="leaveComment(show, $event); $event.stopPropagation()">Leave Comment</button>
+          </ng-template>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Message if watchlist is empty -->
+<div *ngIf="watchlist.length === 0" style="margin-top: 20px; text-align: center;">
+  Your watchlist is empty.
 </div>
