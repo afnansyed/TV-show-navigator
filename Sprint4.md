@@ -12,7 +12,17 @@ Instructions to run the project locally, see `README.md` in the root directory
 ### Frontend:
 
 ### Backend:
-- 
+- Add Comments functionality
+  - Api endpoints
+  - Database table
+  - Documentation
+- Add Watchlist functionality
+  - Api endpoints
+  - Database table
+  - Documentation
+- Fix bug in data typing for reponse JSON
+- Fix bug where new records to database were ignored rather than replacing existing records
+- Fix `/ratings DELETE` endpoint
 
 ## Testing
 ### Frontend:
