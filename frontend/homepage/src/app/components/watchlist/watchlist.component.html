@@ -1,14 +1,15 @@
 <!-- Navbar -->
 <app-navbar></app-navbar>
+<link href="https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Darumadrop+One&family=Playfair+Display:wght@700&family=Abril+Fatface&family=Fredoka+One&display=swap" rel="stylesheet">
 
 <!-- Header -->
-<div class="header" style="display: flex; justify-content: space-between; align-items: center; background-color: #3f51b5; color: white; padding: 16px;">
-  <h3 style="margin-left: 20px; font-weight: lighter; cursor: pointer;" (click)="goHome()">Your Navigator for TV Shows</h3>
-  <h1>TV Show Watch List</h1>
-  <div>
+<div class="header">
+  
+  <h1>TV Show Watchlist</h1>
+  <!--<div>
     <button mat-raised-button color="accent" style="margin-right: 20px;" (click)="openShowList()">Shows</button>
     <button mat-raised-button color="accent" style="margin-right: 20px;">Profile</button>
-  </div>
+  </div>-->
 </div>
 
 <!-- Filter Form (optional) -->
@@ -23,8 +24,8 @@
       <mat-label>GENRE</mat-label>
       <input matInput placeholder="Enter genre" formControlName="genre">
     </mat-form-field>
-    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
-    <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
+    <button mat-raised-button color="primary" type="submit" style="color: #1d7186;">Apply Filters</button>
+    <button mat-button type="button" style="color: #1d7186;" (click)="onFilterClear()">Clear Filters</button>
   </div>
 </form>
 
