@@ -1,15 +1,17 @@
 <!-- Navbar -->
+<div class="container">
 <app-navbar></app-navbar>
+<link href="https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Darumadrop+One&family=Playfair+Display:wght@700&family=Abril+Fatface&family=Fredoka+One&display=swap" rel="stylesheet">
 
 <!-- Header with aligned title -->
-<div class="header" style="display: flex; align-items: center; margin-bottom: 16px; background-color: #3f51b5; color: white;">
+<div class="header">
   <h1 class="header-title">TV Show List</h1>
 </div>
 
 <!-- Filter Form -->
 <form [formGroup]="filterForm" (ngSubmit)="onFilterApply()">
   <div style="display: flex; justify-content: center; gap: 16px; margin: 26px 20px;">
-    <p style="font-weight: bold;">BROWSE BY:</p>
+    <p style="font-weight: bold; color: white;">BROWSE BY:</p>
     <mat-form-field appearance="fill">
       <mat-label>TITLE</mat-label>
       <input matInput placeholder="Enter title" formControlName="titleContains">
@@ -22,8 +24,8 @@
       <mat-label>LIMIT</mat-label>
       <input matInput type="number" placeholder="Default 200" formControlName="limit">
     </mat-form-field>
-    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
-    <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
+    <button mat-raised-button  type="submit">Apply Filters</button>
+    <button mat-button  type="button" (click)="onFilterClear()">Clear Filters</button>
   </div>
 </form>
 
@@ -46,4 +48,5 @@
       </mat-card-actions>
     </mat-card>
   </div>
+</div>
 </div>
