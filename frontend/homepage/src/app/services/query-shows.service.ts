@@ -1,8 +1,8 @@
-// query-shows.service.ts
+// src/app/services/query-shows.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError, switchMap } from 'rxjs/operators';
 
 // This interface represents the raw response from the API.
 export interface RawShow {
@@ -25,6 +25,20 @@ export interface RawShow {
   title: string;         // According to documentation (typically the same as primaryTitle)
 }
 
+// Basic show response from /shows/:id endpoint
+export interface BasicShow {
+  tconst: string;
+  title: string;
+  genres?: string;
+  avgRating?: {
+    Float64: number;
+    Valid: boolean;
+  };
+  primaryTitle?: string;
+  originalTitle?: string;
+  runtimeMinutes?: number;
+}
+
 // This is the interface used in your Angular components.
 export interface Show {
   tconst: string;
@@ -35,7 +49,7 @@ export interface Show {
   userRating?: number;   // Optional field for user ratings
 }
 
-// These are the filters (matching the API’s parameters).
+// These are the filters (matching the API's parameters).
 export interface ShowFilter {
   titleContains?: string;
   isAdult?: string;       // Should be "TRUE" or "FALSE"
@@ -59,6 +73,42 @@ export class ShowService {
     );
   }
 
+  // Improved method to get a show by ID
+  getShowById(id: string): Observable<Show> {
+    // First try the direct endpoint
+    return this.http
+      .get<BasicShow>(`${this.apiUrl}/${id}`)
+      .pipe(
+        // If direct endpoint doesn't have all the data, fetch complete info
+        switchMap((basicShow: BasicShow) => {
+          // Create a simplified Show object with the info we have
+          let rating = 0;
+          if (basicShow.avgRating && basicShow.avgRating.Valid) {
+            rating = basicShow.avgRating.Float64;
+          }
+
+          return of({
+            tconst: basicShow.tconst,
+            title: basicShow.title || basicShow.primaryTitle || basicShow.originalTitle || 'Unknown Show',
+            rating: rating,
+            // Remove genre and runtimeMinutes since they're not reliably returned
+            genre: "",  // Empty string instead of actual genre
+            runtimeMinutes: 0  // Default to 0 instead of actual runtime
+          } as Show);
+        }),
+        catchError(error => {
+          console.error(`Error fetching show ${id}:`, error);
+          return of({
+            tconst: id,
+            title: "Unknown Show",
+            rating: 0,
+            genre: "",
+            runtimeMinutes: 0
+          } as Show);
+        })
+      );
+  }
+
   getShows(filters?: ShowFilter): Observable<Show[]> {
     let params = new HttpParams();
     if (filters) {
@@ -72,8 +122,14 @@ export class ShowService {
     }
 
     return this.http.get<RawShow[]>(this.apiUrl, { params }).pipe(
-      map(rawShows =>
-        rawShows.map(raw => {
+      map(rawShows => {
+        // Check if rawShows is null or undefined before mapping
+        if (!rawShows) {
+          console.warn('Received null or undefined from API for shows');
+          return [];
+        }
+
+        return rawShows.map(raw => {
           // Convert the nested avgRating object to a simple number.
           let rating = 0;
           if (raw.avgRating && raw.avgRating.Valid) {
@@ -81,15 +137,17 @@ export class ShowService {
           }
           return {
             tconst: raw.tconst,
-            // Use originalTitle (or raw.title) as the display title.
-            title: raw.originalTitle,
+            title: raw.primaryTitle || raw.originalTitle || raw.title || '',
             rating: rating,
-            genre: raw.genres,
-            runtimeMinutes: raw.runtimeMinutes
+            genre: raw.genres || "N/A",
+            runtimeMinutes: raw.runtimeMinutes || 0
           } as Show;
-        })
-
-      )
+        });
+      }),
+      catchError(error => {
+        console.error('Error fetching shows:', error);
+        return of([]);
+      })
     );
   }
 }

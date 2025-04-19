@@ -1,30 +1,68 @@
-// watchlist.service.ts
+// src/app/services/watchlist.service.ts
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Show } from './query-shows.service';  // adjust the path as needed
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { switchMap, tap, catchError } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root'
-})
+// ▶ Change this import:
+import { AuthenticationService } from './authentication.service';
+import { Show } from './query-shows.service';
+
+export interface WatchlistItem {
+  userID: number;
+  showID: string;
+  status: number;
+}
+
+@Injectable({ providedIn: 'root' })
 export class WatchlistService {
-  private watchlist: Show[] = [];
-  private watchlistSubject = new BehaviorSubject<Show[]>(this.watchlist);
-  watchlist$ = this.watchlistSubject.asObservable();
+  private apiUrl = 'http://localhost:8080/watchlist';
 
-  addShow(show: Show): void {
-    if (!this.isInWatchlist(show)) {
-      this.watchlist.push(show);
-      this.watchlistSubject.next(this.watchlist);
+  private itemsSubject = new BehaviorSubject<WatchlistItem[]>([]);
+  public items$ = this.itemsSubject.asObservable();
+
+  constructor(
+    private http: HttpClient,
+    private auth: AuthenticationService   // ← use AuthenticationService
+  ) {}
+
+  loadWatchlist(): Observable<WatchlistItem[]> {
+    const user = this.auth.currentUserSubject.value;
+    if (!user) {
+      this.itemsSubject.next([]);
+      return of([]);
     }
+
+    const params = new HttpParams().set('userID', user.id.toString());
+    return this.http.get<WatchlistItem[]>(this.apiUrl, { params }).pipe(
+      tap(items => this.itemsSubject.next(items)),
+      catchError(err => {
+        console.error('Failed to fetch watchlist', err);
+        return throwError(() => err);
+      })
+    );
   }
 
-  removeShow(show: Show): void {
-    this.watchlist = this.watchlist.filter(s => s.tconst !== show.tconst);
-    this.watchlistSubject.next(this.watchlist);
+  addShowToWatchlist(show: Show): Observable<WatchlistItem[]> {
+    const user = this.auth.currentUserSubject.value!;
+    const payload = { userID: user.id, showID: show.tconst, status: 1 };
+    return this.http.post(this.apiUrl, payload).pipe(
+      switchMap(() => this.loadWatchlist())
+    );
   }
 
-  // Add this helper method
+  removeShowFromWatchlist(show: Show): Observable<WatchlistItem[]> {
+    const user = this.auth.currentUserSubject.value!;
+    const options = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      body: { userID: user.id, showID: show.tconst }
+    };
+    return this.http.delete(this.apiUrl, options).pipe(
+      switchMap(() => this.loadWatchlist())
+    );
+  }
+
   isInWatchlist(show: Show): boolean {
-    return this.watchlist.some(s => s.tconst === show.tconst);
+    return this.itemsSubject.value.some(i => i.showID === show.tconst);
   }
 }

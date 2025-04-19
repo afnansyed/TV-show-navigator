@@ -1,38 +1,45 @@
+// src/app/pages/sign-in/sign-in.component.ts
 import { Component } from '@angular/core';
-import { MATERIAL_IMPORTS } from '../../material.imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { MATERIAL_IMPORTS } from '../../material.imports';
+import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
   selector: 'app-sign-in',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    ...MATERIAL_IMPORTS
+  ],
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss'],
-  imports: [CommonModule, RouterModule, ...MATERIAL_IMPORTS, FormsModule],
-  standalone: true
 })
 export class SignInComponent {
-  username: string = '';
-  password: string = '';
-  errorMess: string = '';
+  username = '';
+  password = '';
+  errorMess = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthenticationService,
+    private router: Router
+  ) {}
 
   onSubmit(): void {
-    this.authService.login(this.username, this.password).subscribe({
+    this.auth.signIn(this.username, this.password).subscribe({
       next: (success: boolean) => {
         if (success) {
-          // Navigate to a dashboard or home page on successful sign-in.
           this.router.navigate(['/home']);
         } else {
           this.errorMess = 'Invalid credentials';
         }
       },
-      error: (err) => {
+      error: err => {
         this.errorMess = 'Error signing in';
-        console.error('Error signing in:', err);
+        console.error(err);
       }
     });
   }

@@ -1,76 +1,95 @@
-<!-- Navbar -->
 <app-navbar></app-navbar>
 
-<!-- Header -->
-<div class="header" style="display: flex; justify-content: space-between; align-items: center; background-color: #3f51b5; color: white; padding: 16px;">
-  <h3 style="margin-left: 20px; font-weight: lighter; cursor: pointer;" (click)="goHome()">Your Navigator for TV Shows</h3>
-  <h1>TV Show Watch List</h1>
-  <div>
-    <button mat-raised-button color="accent" style="margin-right: 20px;" (click)="openShowList()">Shows</button>
-    <button mat-raised-button color="accent" style="margin-right: 20px;">Profile</button>
-  </div>
+<div class="header" style="display: flex; justify-content: space-between; align-items: center;
+    background-color: #3f51b5; color: white; padding: 16px;">
+    <h3 style="margin-left: 20px; font-weight: lighter; cursor: pointer;"
+        (click)="goHome()">Your Navigator for TV Shows</h3>
+    <h1>TV Show Watch List</h1>
+    <div>
+        <button mat-raised-button color="accent" style="margin-right: 20px;" (click)="openShowList()">
+            Shows
+        </button>
+        <button mat-raised-button color="accent" style="margin-right: 20px;">
+            Profile
+        </button>
+    </div>
 </div>
 
-<!-- Filter Form (optional) -->
 <form [formGroup]="filterForm" (ngSubmit)="onFilterApply()">
-  <div style="display: flex; justify-content: center; gap: 16px; margin: 26px 20px;">
-    <p style="font-weight: bold;">BROWSE BY:</p>
-    <mat-form-field appearance="fill">
-      <mat-label>TITLE</mat-label>
-      <input matInput placeholder="Enter title" formControlName="titleContains">
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-      <mat-label>GENRE</mat-label>
-      <input matInput placeholder="Enter genre" formControlName="genre">
-    </mat-form-field>
-    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
-    <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
-  </div>
+    <div style="display: flex; justify-content: center; gap: 16px; margin: 26px 20px;">
+        <p style="font-weight: bold;">BROWSE BY:</p>
+        <mat-form-field appearance="fill">
+            <mat-label>TITLE</mat-label>
+            <input matInput placeholder="Enter title" formControlName="titleContains" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>GENRE</mat-label>
+            <input matInput placeholder="Enter genre" formControlName="genre" />
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Apply Filters</button>
+        <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
+    </div>
 </form>
 
-<!-- Card Layout -->
-<ng-container *ngIf="authService.userProfile$ | async as profile">
-  <div class="card-container">
-    <div class="card-item" *ngFor="let show of watchlist">
-      <mat-card class="clickable-card" (click)="router.navigate(['/show-details', show.tconst])">
-        <mat-card-header>
-          <mat-card-title>{{ show.title }}</mat-card-title>
-          <mat-card-subtitle>{{ show.genre }} | {{ show.runtimeMinutes }} min</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Rating: {{ show.rating }}</p>
-          <!-- Display the user's rating if it exists -->
-          <ng-container *ngIf="profile.ratings[show.tconst] !== undefined">
-            <p><strong>Your Rating:</strong> {{ profile.ratings[show.tconst] }}</p>
-          </ng-container>
-          <!-- Display comment if one exists -->
-          <ng-container *ngIf="profile.comments[show.tconst] && profile.comments[show.tconst].length > 0">
-            <p><strong>Comment:</strong> {{ profile.comments[show.tconst][0] }}</p>
-          </ng-container>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button color="warn" (click)="removeShow(show); $event.stopPropagation()">Remove</button>
-          <!-- Rating button: If rating exists, show "Edit Rating", otherwise "Leave Rating" -->
-          <ng-container *ngIf="profile.ratings[show.tconst] !== undefined; else leaveRatingTemplate">
-            <button mat-button color="primary" (click)="leaveOrEditRating(show, $event); $event.stopPropagation()">Edit Rating</button>
-          </ng-container>
-          <ng-template #leaveRatingTemplate>
-            <button mat-button color="primary" (click)="leaveOrEditRating(show, $event); $event.stopPropagation()">Leave Rating</button>
-          </ng-template>
-          <!-- Comment buttons: if a comment exists, show "Edit Comment"; otherwise, "Leave Comment" -->
-          <ng-container *ngIf="profile.comments[show.tconst] && profile.comments[show.tconst].length > 0; else leaveCommentTemplate">
-            <button mat-button color="primary" (click)="editComment(show, $event); $event.stopPropagation()">Edit Comment</button>
-          </ng-container>
-          <ng-template #leaveCommentTemplate>
-            <button mat-button color="primary" (click)="leaveComment(show, $event); $event.stopPropagation()">Leave Comment</button>
-          </ng-template>
-        </mat-card-actions>
-      </mat-card>
+<!-- Loading indicator -->
+<div *ngIf="isLoading" style="display: flex; justify-content: center; margin: 50px 0;">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span style="margin-left: 15px; line-height: 40px;">Loading your watchlist...</span>
+</div>
+
+<ng-container *ngIf="!isLoading && currentProfile as profile">
+    <div class="card-container">
+        <div class="card-item" *ngFor="let show of watchlist">
+            <mat-card class="clickable-card" [routerLink]="['/show-details', show.tconst]">
+                <mat-card-header>
+                    <mat-card-title>{{ show.title }}</mat-card-title>
+                    <!-- Removed the subtitle completely -->
+                </mat-card-header>
+                <mat-card-content>
+                    <p *ngIf="show.rating">Average Rating: {{ show.rating | number:'1.1-1' }}</p>
+                    <p *ngIf="!show.rating">No ratings yet</p>
+                    <ng-container *ngIf="getMyRating(show) !== null">
+                        <p><strong>Your Rating:</strong> {{ getMyRating(show) }}</p>
+                    </ng-container>
+                    <ng-container *ngIf="getMyComment(show) !== null">
+                        <p><strong>Comment:</strong> {{ getMyComment(show) }}</p>
+                    </ng-container>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button color="warn"
+                        (click)="removeShow(show); $event.stopPropagation()">
+                        Remove
+                    </button>
+                    <ng-container *ngIf="getMyRating(show) !== null; else leaveRating">
+                        <button mat-button color="primary"
+                            (click)="leaveOrEditRating(show); $event.stopPropagation()">
+                            Edit Rating
+                        </button>
+                    </ng-container>
+                    <ng-template #leaveRating>
+                        <button mat-button color="primary"
+                            (click)="leaveOrEditRating(show); $event.stopPropagation()">
+                            Leave Rating
+                        </button>
+                    </ng-template>
+                    <ng-container *ngIf="getMyComment(show) !== null; else leaveComment">
+                        <button mat-button color="primary"
+                            (click)="leaveOrEditComment(show); $event.stopPropagation()">
+                            Edit Comment
+                        </button>
+                    </ng-container>
+                    <ng-template #leaveComment>
+                        <button mat-button color="primary"
+                            (click)="leaveOrEditComment(show); $event.stopPropagation()">
+                            Leave Comment
+                        </button>
+                    </ng-template>
+                </mat-card-actions>
+            </mat-card>
+        </div>
     </div>
-  </div>
 </ng-container>
 
-<!-- Message if watchlist is empty -->
-<div *ngIf="watchlist.length === 0" style="margin-top: 20px; text-align: center;">
-  Your watchlist is empty.
+<div *ngIf="!isLoading && watchlist.length === 0" style="margin-top: 20px; text-align: center;">
+    Your watchlist is empty.
 </div>
