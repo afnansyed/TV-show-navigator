@@ -18,6 +18,7 @@ Instructions to run the project locally, see `README.md` in the root directory
            - Color
            - Box heading text
            - Added prompt that navigates user to the sign in page if they already have an account.
+           - Made the box hover when mouse moves on top of it.
         - Background image
     - On sign in page:
         - The top navigation bar is removed. Only wesite title is displayed in the center.
@@ -26,6 +27,7 @@ Instructions to run the project locally, see `README.md` in the root directory
            - Color
            - Box heading text
            - Added prompt that navigates user to the sign up page if they don't have an account yet.
+           - Made the box hover when mouse moves on top of it.
         - Background image
 
       
