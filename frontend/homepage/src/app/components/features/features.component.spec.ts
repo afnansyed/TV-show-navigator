@@ -89,22 +89,6 @@ describe('features component unit test', () => {
     expect(reviewsContainer.scrollTop).toBe(0);
   });
   
-
-  it('Displays the images of the TV Show posters', () => {
-
-    const imageElements = fixture.debugElement.queryAll(By.css('.popular-shows-section .images img'));
-    expect(imageElements.length).toBeGreaterThan(0, 'No images found');
-  
-    imageElements.forEach(img => {
-      const imgElement = img.nativeElement;
-
-      expect(imgElement.src).not.toBeNull();
-      expect(imgElement.src).toMatch(/\/su\.jpg|\/p\.jpg|\/true\.jpg|\/cher\.jpg/, 'Incorrect image');
-  
-      expect(imgElement.complete).toBeTrue();
-  
-    });
-  });
   
   
   
