@@ -5,14 +5,13 @@
 
 <div class="sign-up-container">
   <mat-toolbar color="primary" class="navbar">
-    <span class="logo" routerLink="/home">Your Navigator for TV Shows</span>
-    <span class="spacer"></span>
+    <span class="logo" routerLink="/home">Your TV Shows Navigator</span>
   
    
   </mat-toolbar>
-  
+  <div class="sign-in-box">
   <mat-card class="sign-up">
-    <mat-card-title>CREATE ACCOUNT</mat-card-title>
+    <mat-card-title>Join Us Today!</mat-card-title>
       <mat-card-content>
         <form (ngSubmit)="onSubmit()">
         
@@ -31,5 +30,11 @@
 
         </form>
       </mat-card-content>
+      <div class="sign-in-prompt">
+        Already have an account? <a routerLink="/sign-in">Sign in</a> now!
+      </div>
     </mat-card>
+
+    
+  </div>
   </div>

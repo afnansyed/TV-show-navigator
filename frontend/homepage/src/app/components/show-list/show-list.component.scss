@@ -14,3 +14,24 @@
 .header-title {
   margin-right: 20px;
 }
+
+.header{
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  margin-bottom: 16px; 
+  background-color: #145160; 
+  color: white;
+
+  h1 {
+    font-family: 'Darumadrop One', cursive;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-size: 3rem;
+    display: inline-block;
+  }
+}
+
+

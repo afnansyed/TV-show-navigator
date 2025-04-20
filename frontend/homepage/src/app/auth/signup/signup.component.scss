@@ -1,5 +1,5 @@
 // sign-up.component.scss
-@import url('https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Darumadrop+One&family=Playfair+Display:wght@700&family=Abril+Fatface&family=Fredoka+One&family=Oswald:wght@400;700&display=swap" rel="stylesheet');
 
 .sign-up-container {
   position: relative;
@@ -7,10 +7,11 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url('/cross.jpg');
+  background-image: url('/cros.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
 
   .navbar {
     position: absolute;
@@ -23,12 +24,16 @@
     background: transparent;
     box-shadow: none;
     padding: 0 40px;
+    
 
     .logo {
+      //font-family: 'Oswald', sans-serif;
       font-family: 'Darumadrop One', cursive;
       font-weight: 700;
       font-size: 2.5rem;
-      color: white;
+      color: rgb(255, 255, 255);
+
+      text-shadow: 1px 1px 3px #071b2081;
       margin: 0;
     }
 
@@ -38,8 +43,6 @@
   }
 
   .sign-up {
-    width: 300px;
-    padding: 20px;
     //#14516095 
     background:  #145160b4;
     color: white;
@@ -51,14 +54,16 @@
     font-weight: bold;
     //font-family: 'Quattrocento', serif;
     margin-bottom: 20px;
+    margin-top: 20px;
     //font-style: italic;
+    
   }
 
   mat-card-content {
     form {
       display: flex;
       flex-direction: column;
-
+      margin-top: 15px;
       label {
         margin-bottom: 5px;
       }
@@ -82,6 +87,13 @@
   width: 300px;
   padding: 20px;
   justify-content: center;
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+  }
 }
 
   
@@ -97,9 +109,11 @@
   .navbar {
     background-color: transparent;
     box-shadow: none;
+    justify-content: center;
     color: rgb(45, 37, 37);
     text-align: center;
     width: 100%;
+    margin-top: 40px;
     .logo {
       font-family: 'Darumadrop One', cursive;
       font-weight: 700;
@@ -109,5 +123,18 @@
     }
   }
 
+  .sign-in-prompt {
+    margin-top: 35px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: white;
+    font-size: 0.9rem;
+    //font-family: 'Quattrocento', serif;
   
+    a {
+      color: #ffe082;
+      text-decoration: underline;
+      //font-weight: bold;
+    }
+  } 
     

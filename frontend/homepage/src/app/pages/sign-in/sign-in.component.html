@@ -7,11 +7,12 @@
 <div class="sign-in-container">
 
   <mat-toolbar class="navbar">
-    <span class="logo" routerLink="/home">Your Navigator for TV Shows</span>
-    <span class="spacer"></span>
+    <span class="logo" routerLink="/home">Your TV Shows Navigator</span>
+
    
   </mat-toolbar>
 
+  <div class="sign-in-box">
   <mat-card class="sign-in">
     <mat-card-title>Welcome Back!</mat-card-title>
       <mat-card-content>
@@ -25,7 +26,15 @@
           <button mat-raised-button color="accent" type="submit">Sign In</button>
         </form>
       </mat-card-content>
+
+      <div class="sign-up-prompt">
+        Don't have an account? <a routerLink="/sign-up">Sign up</a> now!
+      </div>
     </mat-card>
-  </div>
+    
+    
+  
 
   
+</div>
+</div>

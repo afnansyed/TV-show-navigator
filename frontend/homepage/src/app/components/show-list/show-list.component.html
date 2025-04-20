@@ -1,8 +1,10 @@
 <!-- Navbar -->
+
 <app-navbar></app-navbar>
+<link href="https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&family=Darumadrop+One&family=Playfair+Display:wght@700&family=Abril+Fatface&family=Fredoka+One&display=swap" rel="stylesheet">
 
 <!-- Header with aligned title -->
-<div class="header" style="display: flex; align-items: center; margin-bottom: 16px; background-color: #3f51b5; color: white;">
+<div class="header">
   <h1 class="header-title">TV Show List</h1>
 </div>
 
@@ -22,8 +24,8 @@
       <mat-label>LIMIT</mat-label>
       <input matInput type="number" placeholder="Default 200" formControlName="limit">
     </mat-form-field>
-    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
-    <button mat-button type="button" (click)="onFilterClear()">Clear Filters</button>
+    <button mat-raised-button  type="submit" style="color: #1d7186;">Apply Filters</button>
+    <button mat-button  type="button" style="color: #1d7186;" (click)="onFilterClear()">Clear Filters</button>
   </div>
 </form>
 
@@ -31,7 +33,7 @@
 <div class="card-container">
   <!-- Loop through the shows array, creating a card for each show -->
   <div class="card-item" *ngFor="let show of shows">
-    <mat-card (click)="onCardClick(show)" style="cursor: pointer;">
+    <mat-card (click)="onCardClick(show)" style="cursor: pointer;" >
       <mat-card-header>
         <mat-card-title>{{ show.title }}</mat-card-title>
         <mat-card-subtitle>{{ show.genre }} | {{ show.runtimeMinutes }} min</mat-card-subtitle>
@@ -40,7 +42,7 @@
         <p>Rating: {{ show.rating }}</p>
       </mat-card-content>
       <mat-card-actions>
-        <mat-slide-toggle [checked]="isInWatchlist(show)" (change)="toggleWatchlist($event, show)">
+        <mat-slide-toggle [checked]="isInWatchlist(show)" (change)="toggleWatchlist($event, show)" >
           Watchlist
         </mat-slide-toggle>
       </mat-card-actions>

@@ -40,9 +40,17 @@
   .sign-in {
     width: 300px;
     padding: 20px;
-    //#14516095 
-    background:  #90a5aab2;
+    //#14516095 90a5aab2
+    background:  #14516095;
     color: white;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+    }
   }
 
   mat-card-title {
@@ -50,6 +58,7 @@
     font-size: 2rem;
     font-weight: bold;
     //font-family: 'Quattrocento', serif;
+    margin-top: 20px;
     margin-bottom: 20px;
     //font-style: italic;
   }
@@ -58,7 +67,7 @@
     form {
       display: flex;
       flex-direction: column;
-
+      margin-top: 15px;
       label {
         margin-bottom: 5px;
       }
@@ -99,7 +108,9 @@
     box-shadow: none;
     color: rgb(45, 37, 37);
     text-align: center;
+    justify-content: center;
     width: 100%;
+    margin-top: 40px;
     .logo {
       font-family: 'Darumadrop One', cursive;
       font-weight: 700;
@@ -109,4 +120,18 @@
     }
   }
 
-  
+  .sign-up-prompt {
+    margin-top: 35px;
+    text-align: center;
+    color: white;
+    font-size: 0.9rem;
+    //font-family: 'Quattrocento', serif;
+
+    margin-bottom: 10px;
+
+    a {
+      color: #ffe082;
+      text-decoration: underline;
+      //font-weight: bold;
+    }
+  }
