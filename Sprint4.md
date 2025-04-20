@@ -56,6 +56,28 @@ Instructions to run the project locally, see `README.md` in the root directory
       - Displays the correct prompt to sign up, if user does not have an account
       - Displays the 'Your TV Shows Navigator' logo
       - Navigates to sign-up page when "Sign up" link is clicked
+   
+- Cypress Tests:
+    - (test 1) (Updated from previous cypress test due to changes in UI): Shows Button Navigation Test
+        - Testing the fuctionality of the 'Shows' button on homepage in the navigation bar
+          - Visit the homepage 
+          - Check the 'Shows' button exists
+          - Click the 'Shows' button
+          - Check if the URL changes to the "shows" page
+          - Check if "Shows" page content is visible
+
+            ![Image](https://github.com/user-attachments/assets/3495ced0-009f-4893-bdff-061c0fce6e79)
+
+    - (test 2): Watchlist Button Navigation Test
+        - Testing the fuctionality of the 'Watchlist' button on homepage in the navigation bar
+          - Visit the homepage 
+          - Check the 'Watchlist' button exists
+          - Click the 'Watchlist' button
+          - Check if the URL changes to the "watchlist" page
+          - Check if "Watchlist" page content is visible
+
+            ![Image](https://github.com/user-attachments/assets/e3ef4fba-0bbf-4a24-8352-6ad82e7f4155)
+
     
 ### Backend:
 
