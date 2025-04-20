@@ -10,7 +10,25 @@ Instructions to run the project locally, see `README.md` in the root directory
 
 ## Features Added this Sprint
 ### Frontend:
+- Revamped the UI
+    - On sign up page:
+        - The top navigation bar is removed. Only wesite title is displayed in the center.
+        - The website title routes back to home page if clicked.
+        - Sign up box changes:
+           - Color
+           - Box heading text
+           - Added prompt that navigates user to the sign in page if they already have an account.
+        - Background image
+    - On sign in page:
+        - The top navigation bar is removed. Only wesite title is displayed in the center.
+        - The website title routes back to home page if clicked.
+        - Sign in box changes:
+           - Color
+           - Box heading text
+           - Added prompt that navigates user to the sign up page if they don't have an account yet.
+        - Background image
 
+      
 ### Backend:
 - Add Comments functionality
   - Api endpoints
@@ -26,6 +44,16 @@ Instructions to run the project locally, see `README.md` in the root directory
 
 ## Testing
 ### Frontend:
+
+- Unit tests:
+  - sign up component:
+      - Displays the correct prompt to sign in, if user does not have an account
+      - Displays the 'Your TV Shows Navigator' logo
+      - Navigates to sign-in page when "Sign in" link is clicked
+  - sign in component:
+      - Displays the correct prompt to sign up, if user does not have an account
+      - Displays the 'Your TV Shows Navigator' logo
+      - Navigates to sign-up page when "Sign up" link is clicked
     
 ### Backend:
 
