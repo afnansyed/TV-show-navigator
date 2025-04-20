@@ -52,9 +52,12 @@ npx cypress open
 ```
 Test run in google chrome.
 
-Currently, 1 test which is testing the fuctionality of the 'Get Started' button on homepage.
+(test 1) (Updated from previous cypress test due to changes in UI): Shows Button Navigation Test
 
-![get-started-cypress-test](https://github.com/user-attachments/assets/f4e5c626-8a7a-402a-88be-d852666fa119)
+![Image](https://github.com/user-attachments/assets/3495ced0-009f-4893-bdff-061c0fce6e79)
+
+(test 2): Watchlist Button Navigation Test
+![Image](https://github.com/user-attachments/assets/e3ef4fba-0bbf-4a24-8352-6ad82e7f4155)
 
 ## Additional Resources
 
