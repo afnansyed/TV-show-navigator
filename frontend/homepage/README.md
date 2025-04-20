@@ -12,6 +12,17 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+## Using Application
+
+The user is first navigated to the homepage.
+
+![Image](https://github.com/user-attachments/assets/75a92905-d1d7-4753-ae6b-2e4119e2f400)
+
+They can look through the navigation bar to see which page they would like to go to. They can browse through the list of shows in the tv shows list page. They have to have an account and be logged in to use the watchlist, rating, and commenting feature. To sign up or sign in, user can navigate to the page through the navigation bar floating at the side.
+
+![Image](https://github.com/user-attachments/assets/765c0e28-7986-40e3-90df-dcb9f6539960)
+
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
