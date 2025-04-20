@@ -1,3 +1,4 @@
+<!-- src/app/components/navbar/navbar.component.html -->
 <mat-toolbar color="primary" class="navbar-vertical">
   <div class="navbar-content">
     <button mat-icon-button aria-label="Home" routerLink="/home">
@@ -16,20 +17,21 @@
       <mat-icon>queue</mat-icon>
       <span class="label">Watchlist</span>
     </button>
-    <button mat-icon-button aria-label="Profile" routerLink="/profile">
-      <mat-icon>person</mat-icon>
-      <span class="label">Profile</span>
-    </button>
   </div>
 
   <div class="navbar-expandable">
-    <ng-container *ngIf="!(userProfile$ | async); else loggedIn">
+    <!-- No user? Show sign-up/sign-in -->
+    <ng-container *ngIf="!(currentUser$ | async); else loggedInTpl">
       <button mat-raised-button color="accent" routerLink="/sign-up">Sign Up</button>
       <button mat-raised-button color="accent" routerLink="/sign-in">Sign In</button>
     </ng-container>
-    <ng-template #loggedIn>
-      <span class="user-name"> {{ (userProfile$ | async)?.username }}</span>
-      <button mat-raised-button color="warn" (click)="logout()">Logout</button>
+
+    <!-- Logged in: show username + logout -->
+    <ng-template #loggedInTpl>
+      <ng-container *ngIf="currentUser$ | async as user">
+        <span class="user-name">Welcome, {{ user.username }}</span>
+        <button mat-button color="warn" (click)="logout()">Log out</button>
+      </ng-container>
     </ng-template>
   </div>
 </mat-toolbar>

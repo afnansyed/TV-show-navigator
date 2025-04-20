@@ -1,8 +1,9 @@
+// src/app/components/navbar/navbar.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MATERIAL_IMPORTS } from '../../material.imports';
-import { AuthService, UserProfile } from '../../services/auth.service';
+import { AuthenticationService, User } from '../../services/authentication.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -13,15 +14,14 @@ import { Observable } from 'rxjs';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
-  userProfile$: Observable<UserProfile | null>;
-  isLoggedIn$: Observable<boolean>;
+  /** Emits the current user or null */
+  currentUser$: Observable<User | null>;
 
-  constructor(private authService: AuthService) {
-    this.userProfile$ = this.authService.userProfile$;
-    this.isLoggedIn$ = this.authService.loggedIn$;
+  constructor(private auth: AuthenticationService) {
+    this.currentUser$ = this.auth.currentUser$;
   }
 
-  logout(): void {
-    this.authService.logout();
+  logout() {
+    this.auth.logout();
   }
 }

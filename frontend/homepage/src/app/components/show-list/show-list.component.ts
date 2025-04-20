@@ -1,33 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+// src/app/components/show-list/show-list.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../material.imports';
 import { ShowService, Show, ShowFilter } from '../../services/query-shows.service';
-import { AuthService } from '../../services/auth.service';
+import { ProfileService } from '../../services/profileService.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-show-list',
   standalone: true,
-  imports: [CommonModule, MATERIAL_IMPORTS, ReactiveFormsModule, MatSlideToggleModule, MatButtonModule, NavbarComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatSlideToggleModule,
+    MatButtonModule,
+    NavbarComponent,
+    ...MATERIAL_IMPORTS
+  ],
   templateUrl: './show-list.component.html',
   styleUrls: ['./show-list.component.scss']
 })
-export class ShowListComponent implements OnInit {
-  // Use a simple array for the card layout.
+export class ShowListComponent implements OnInit, OnDestroy {
   shows: Show[] = [];
   dataLength = 0;
-
-  // Form for filters remains the same.
   filterForm: FormGroup;
+  private profileSubscription: Subscription | null = null;
 
   constructor(
     private showService: ShowService,
     private fb: FormBuilder,
-    private authService: AuthService, // Replace watchlistService with authService.
+    private profile: ProfileService,
     private router: Router
   ) {
     this.filterForm = this.fb.group({
@@ -41,27 +48,37 @@ export class ShowListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Load shows with no filters initially.
     this.loadShows();
+
+    // Subscribe to profile changes to trigger UI updates when watchlist changes
+    this.profileSubscription = this.profile.profile$.subscribe({
+      next: () => {
+        // This will cause any UI elements using isInWatchlist to refresh
+        // when the profile data changes
+      },
+      error: err => console.error('Error in profile subscription:', err)
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Clean up subscription when component is destroyed
+    if (this.profileSubscription) {
+      this.profileSubscription.unsubscribe();
+    }
   }
 
   loadShows(filters?: ShowFilter): void {
-    console.log('loadShows called with filters:', filters);
     this.showService.getShows(filters).subscribe({
-      next: (data) => {
-        console.log('Fetched shows:', data);
+      next: data => {
         this.shows = data;
         this.dataLength = data.length;
       },
-      error: (err) => {
-        console.error('Error fetching shows:', err);
-      }
+      error: err => console.error('Error fetching shows:', err)
     });
   }
 
   onFilterApply(): void {
-    const filters: ShowFilter = this.filterForm.value;
-    this.loadShows(filters);
+    this.loadShows(this.filterForm.value as ShowFilter);
   }
 
   onFilterClear(): void {
@@ -70,28 +87,31 @@ export class ShowListComponent implements OnInit {
   }
 
   onCardClick(show: Show): void {
-    // Navigate to the show details page
     this.router.navigate(['/show-details', show.tconst]);
   }
 
-  /**
-   * Toggle the watchlist state for a given show using the AuthService.
-   */
   toggleWatchlist(event: any, show: Show): void {
-    if (event.checked) {
-      this.authService.addShowToWatchlist(show);
-      console.log(`Added "${show.title}" to watchlist.`);
-    } else {
-      this.authService.removeShowFromWatchlist(show);
-      console.log(`Removed "${show.title}" from watchlist.`);
-    }
+    const obs = event.checked
+      ? this.profile.addToWatchlist(show.tconst)
+      : this.profile.removeFromWatchlist(show.tconst);
+
+    obs.subscribe({
+      next: () => console.log(
+        event.checked
+          ? `Added "${show.title}" to watchlist.`
+          : `Removed "${show.title}" from watchlist.`
+      ),
+      error: err => console.error('Error toggling watchlist:', err)
+    });
   }
 
-  /**
-   * Checks if a show is in the watchlist using the AuthService.
-   */
   isInWatchlist(show: Show): boolean {
-    return this.authService.isInWatchlist(show);
+    try {
+      return this.profile.isInWatchlist(show.tconst);
+    } catch (error) {
+      console.error('Error checking watchlist status:', error);
+      return false;
+    }
   }
 
   openWatchlist(): void {
@@ -99,6 +119,6 @@ export class ShowListComponent implements OnInit {
   }
 
   goHome(): void {
-    this.router.navigate(['']);
+    this.router.navigate(['/home']);
   }
 }

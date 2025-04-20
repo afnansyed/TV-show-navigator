@@ -1,40 +1,39 @@
+// src/app/auth/signup/signup.component.ts
 import { Component } from '@angular/core';
-import { MATERIAL_IMPORTS } from '../../material.imports';
+import { AuthenticationService } from '../../services/authentication.service';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';  // Use the AuthService instead of SignupService
-import { Router } from '@angular/router';
+import { MATERIAL_IMPORTS } from '../../material.imports';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss'],  // Correct property name is styleUrls
-  imports: [CommonModule, RouterModule, ...MATERIAL_IMPORTS, FormsModule],
-  standalone: true
+  styleUrls: ['./signup.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterModule, FormsModule, ...MATERIAL_IMPORTS],
 })
 export class SignupComponent {
-  username: string = '';
-  password: string = '';
-  errorMess: string = '';
+  username = '';
+  password = '';
+  errorMess = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthenticationService,
+    private router: Router
+  ) {}
 
-  onSubmit(): void {
-    // Call login() to simulate sign-up (in our mock, login creates a new profile)
-    this.authService.login(this.username, this.password).subscribe({
-      next: (success) => {
-        if (success) {
-          console.log('Account created successfully');
-          // Navigate to a dashboard or home page after successful sign-up
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.errorMess = 'Could not create account';
-        }
+  onSubmit() {
+    this.auth.signUp(this.username, this.password).subscribe({
+      next: user => {
+        console.log('Signed up & logged in as', user);
+        // now navigate somewhere you actually have a route for:
+        this.router.navigate(['/home']);
       },
-      error: (err) => {
-        this.errorMess = 'Error creating account';
-        console.error('Error:', err);
+      error: err => {
+        console.error('Sign‑up failed', err);
+        this.errorMess = 'Could not sign you up';
       }
     });
   }
