@@ -31,6 +31,16 @@ Instructions to run the project locally, see `README.md` in the root directory
            - Added prompt that navigates user to the sign up page if they don't have an account yet.
            - Made the box hover when mouse moves on top of it.
         - Background image
+- Connect the frontend with backend endpoints:
+    - added several services to handle communication with the backend:
+        - athenticationService:
+            - Responsible for handling user sign-up and sign-in and its respective API calls.
+        - profileService:
+            - Responsible for queries and keeping track of users' data, such as watchlist, comments, and ratings.
+        - showService:
+            - Handles all API calls related to querying shows.
+    - Remove mock-up backends since we have access to the required APIs this sprint.
+
 
       
 ### Backend:
@@ -58,6 +68,17 @@ Instructions to run the project locally, see `README.md` in the root directory
       - Displays the correct prompt to sign up, if user does not have an account
       - Displays the 'Your TV Shows Navigator' logo
       - Navigates to sign-up page when "Sign up" link is clicked
+  - AuthenticationService:
+      - signUp
+          - Simulate the process of creating a new user.
+      - SignIn
+          - Handle success and error response from the backend.
+  - ShowService:
+      - Test queries with different filter configurations
+      - Handle query errors
+  - ProfileService:
+      - Load profile data when a user is logged in
+      - Handle slice errors
 
 - All Unit Tests
    ![Screenshot 2025-04-21 125509](https://github.com/user-attachments/assets/58be2952-95c5-43c2-bc20-73b21f7f4b1e)
