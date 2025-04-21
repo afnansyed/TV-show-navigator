@@ -6,7 +6,7 @@ Git Repo: `https://github.com/afnansyed/TV-show-navigator`
 
 Frontend readme: [`/frontend/homepage/README.md`](/frontend/homepage/README.md)
 
-Links to Demo Video:
+Links to Demo Video: https://www.youtube.com/watch?v=vxZK6FW9RPQ
 
 Instructions to run the project locally, see `README.md` in the root directory
 
