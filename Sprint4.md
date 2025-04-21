@@ -4,6 +4,8 @@
 Git Repo: `https://github.com/afnansyed/TV-show-navigator`
 - Due to the size of the sqlite database file, it is excluded from the git repo, but is included in this submission (`./backend/shows.db`) for your convenience.
 
+Frontend readme: [`/frontend/homepage/README.md`](/frontend/homepage/README.md)
+
 Links to Demo Video:
 
 Instructions to run the project locally, see `README.md` in the root directory
@@ -56,6 +58,9 @@ Instructions to run the project locally, see `README.md` in the root directory
       - Displays the correct prompt to sign up, if user does not have an account
       - Displays the 'Your TV Shows Navigator' logo
       - Navigates to sign-up page when "Sign up" link is clicked
+
+   ![Screenshot 2025-04-21 125509](https://github.com/user-attachments/assets/58be2952-95c5-43c2-bc20-73b21f7f4b1e)
+
    
 - Cypress Tests:
     - (test 1) (Updated from previous cypress test due to changes in UI): Shows Button Navigation Test
