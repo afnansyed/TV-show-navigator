@@ -1,91 +1,121 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ShowListComponent } from './show-list.component';
-import { ShowService, Show, ShowFilter } from '../../services/query-shows.service';
-import { AuthService } from '../../services/auth.service';
+// src/app/components/show-list/show-list.component.spec.ts
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ShowListComponent } from './show-list.component';
+import { ShowService } from '../../services/query-shows.service';
+import { ProfileService } from '../../services/profileService.service';
+import { MATERIAL_IMPORTS } from '../../material.imports';
 
 describe('ShowListComponent', () => {
   let component: ShowListComponent;
   let fixture: ComponentFixture<ShowListComponent>;
-  let showServiceStub: Partial<ShowService>;
-  let authServiceStub: Partial<AuthService>;
+  let showServiceSpy: jasmine.SpyObj<ShowService>;
+  let profileServiceSpy: jasmine.SpyObj<ProfileService>;
   let router: Router;
 
-  // Dummy shows for testing.
-  const dummyShows: Show[] = [
-    { tconst: 'tt1234567', title: 'Test Show 1', rating: 7, genre: 'Drama', runtimeMinutes: 60 },
-    { tconst: 'tt7654321', title: 'Test Show 2', rating: 8, genre: 'Comedy', runtimeMinutes: 30 }
-  ];
-
   beforeEach(async () => {
-    // Create stub for ShowService.
-    showServiceStub = {
-      getShows: (filters?: ShowFilter) => of(dummyShows)
-    };
+    // Create spies for our injected services
+    showServiceSpy = jasmine.createSpyObj('ShowService', ['getShows']);
+    profileServiceSpy = jasmine.createSpyObj(
+      'ProfileService',
+      ['addToWatchlist', 'removeFromWatchlist', 'isInWatchlist'],
+      { profile$: of({
+          user: { id: 1, username: 'testuser' },
+          watchlist: [],
+          ratings: [],
+          comments: []
+        })
+      }
+    );
 
-    // Create stub for AuthService with spies for watchlist methods.
-    authServiceStub = {
-      addShowToWatchlist: jasmine.createSpy('addShowToWatchlist'),
-      removeShowFromWatchlist: jasmine.createSpy('removeShowFromWatchlist'),
-      isInWatchlist: (show: Show) => false,
-      userProfile$: of(null)
-    };
+    // Stub methods
+    showServiceSpy.getShows.and.returnValue(of([]));
+    profileServiceSpy.addToWatchlist.and.returnValue(of(null));
+    profileServiceSpy.removeFromWatchlist.and.returnValue(of(null));
+    profileServiceSpy.isInWatchlist.and.returnValue(false);
 
     await TestBed.configureTestingModule({
-      // Import RouterTestingModule and the standalone component.
-      imports: [RouterTestingModule, ShowListComponent],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        ReactiveFormsModule,
+        NoopAnimationsModule,
+        ...MATERIAL_IMPORTS,
+        ShowListComponent // because it's standalone
+      ],
       providers: [
-        { provide: ShowService, useValue: showServiceStub },
-        { provide: AuthService, useValue: authServiceStub }
+        { provide: ShowService, useValue: showServiceSpy },
+        { provide: ProfileService, useValue: profileServiceSpy }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ShowListComponent);
     component = fixture.componentInstance;
-    // Inject Router from RouterTestingModule.
     router = TestBed.inject(Router);
-    // Spy on router.navigate.
     spyOn(router, 'navigate');
-    fixture.detectChanges(); // Trigger ngOnInit and loadShows()
   });
 
-  it('should create', () => {
+  it('should create', fakeAsync(() => {
+    fixture.detectChanges();
+    tick();
     expect(component).toBeTruthy();
-  });
+  }));
 
-  it('should load shows on init', () => {
-    expect(component.shows).toEqual(dummyShows);
-    expect(component.dataLength).toEqual(dummyShows.length);
-  });
+  it('should load shows on initialization', fakeAsync(() => {
+    fixture.detectChanges();
+    tick();
+    expect(showServiceSpy.getShows).toHaveBeenCalledTimes(1);
+    expect(component.shows).toEqual([]);
+    expect(component.dataLength).toBe(0);
+  }));
 
-  it('should apply filters and call loadShows with the filter object', () => {
-    spyOn(component, 'loadShows');
-    // Set filter form values.
-    component.filterForm.setValue({
-      titleContains: 'Test',
-      isAdult: '',
-      genre: '',
-      startYearStart: '',
-      startYearEnd: '',
-      limit: ''
-    });
-    const expectedFilters: ShowFilter = {
-      titleContains: 'Test',
-      isAdult: '',
-      genre: '',
-      startYearStart: '',
-      startYearEnd: '',
-      limit: ''
+  it('should handle error when loading shows', fakeAsync(() => {
+    showServiceSpy.getShows.and.returnValue(throwError(() => new Error('fail')));
+    spyOn(console, 'error');
+
+    component.loadShows();
+    tick();
+
+    expect(console.error).toHaveBeenCalledWith('Error fetching shows:', jasmine.any(Error));
+  }));
+
+  it('should apply filters when form is submitted', () => {
+    const filters = {
+      titleContains: 'Foo',
+      isAdult: 'TRUE',
+      genre: 'Action',
+      startYearStart: '2000',
+      startYearEnd: '2005',
+      limit: '10'
     };
+    component.filterForm.setValue(filters);
+
+    showServiceSpy.getShows.calls.reset();
     component.onFilterApply();
-    expect(component.loadShows).toHaveBeenCalledWith(expectedFilters);
+
+    expect(showServiceSpy.getShows).toHaveBeenCalledWith(filters);
   });
 
-  it('should clear filters and reload shows', () => {
-    spyOn(component, 'loadShows');
+  it('should clear filters', fakeAsync(() => {
+    component.filterForm.setValue({
+      titleContains: 'Bar',
+      isAdult: 'FALSE',
+      genre: 'Drama',
+      startYearStart: '1990',
+      startYearEnd: '1999',
+      limit: '5'
+    });
+
+    showServiceSpy.getShows.calls.reset();
     component.onFilterClear();
+    tick();
+
     expect(component.filterForm.value).toEqual({
       titleContains: null,
       isAdult: null,
@@ -94,33 +124,45 @@ describe('ShowListComponent', () => {
       startYearEnd: null,
       limit: null
     });
-    expect(component.loadShows).toHaveBeenCalled();
+    expect(showServiceSpy.getShows).toHaveBeenCalled();
+  }));
+
+  it('should navigate to show details on card click', () => {
+    const fakeShow = { tconst: 'tt001' } as any;
+    component.onCardClick(fakeShow);
+    expect(router.navigate).toHaveBeenCalledWith(['/show-details', 'tt001']);
   });
 
-  it('should navigate to show details when onCardClick is called', () => {
-    component.onCardClick(dummyShows[0]);
-    expect(router.navigate).toHaveBeenCalledWith(['/show-details', dummyShows[0].tconst]);
+  it('should add to watchlist', () => {
+    const evt = { checked: true } as any;
+    const fakeShow = { tconst: 'tt002' } as any;
+    component.toggleWatchlist(evt, fakeShow);
+    expect(profileServiceSpy.addToWatchlist).toHaveBeenCalledWith('tt002');
+    expect(profileServiceSpy.removeFromWatchlist).not.toHaveBeenCalled();
   });
 
-  it('should call authService.addShowToWatchlist when toggleWatchlist is checked', () => {
-    const event = { checked: true };
-    component.toggleWatchlist(event, dummyShows[0]);
-    expect(authServiceStub.addShowToWatchlist).toHaveBeenCalledWith(dummyShows[0]);
+  it('should remove from watchlist', () => {
+    const evt = { checked: false } as any;
+    const fakeShow = { tconst: 'tt003' } as any;
+    component.toggleWatchlist(evt, fakeShow);
+    expect(profileServiceSpy.removeFromWatchlist).toHaveBeenCalledWith('tt003');
+    expect(profileServiceSpy.addToWatchlist).not.toHaveBeenCalled();
   });
 
-  it('should call authService.removeShowFromWatchlist when toggleWatchlist is unchecked', () => {
-    const event = { checked: false };
-    component.toggleWatchlist(event, dummyShows[0]);
-    expect(authServiceStub.removeShowFromWatchlist).toHaveBeenCalledWith(dummyShows[0]);
-  });
-
-  it('should navigate to /watchlist when openWatchlist is called', () => {
+  it('should navigate to watchlist', () => {
     component.openWatchlist();
     expect(router.navigate).toHaveBeenCalledWith(['/watchlist']);
   });
 
-  it('should navigate to home when goHome is called', () => {
+  it('should navigate to home', () => {
     component.goHome();
-    expect(router.navigate).toHaveBeenCalledWith(['']);
+    expect(router.navigate).toHaveBeenCalledWith(['/home']);
+  });
+
+  it('should unsubscribe on destroy', () => {
+    const sub = jasmine.createSpyObj('sub', ['unsubscribe']);
+    (component as any).profileSubscription = sub;
+    component.ngOnDestroy();
+    expect(sub.unsubscribe).toHaveBeenCalled();
   });
 });

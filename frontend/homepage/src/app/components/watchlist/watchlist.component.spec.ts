@@ -1,100 +1,135 @@
+// src/app/components/watchlist/watchlist.component.spec.ts
+import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { of, throwError } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 import { WatchlistComponent } from './watchlist.component';
-import { AuthService, UserProfile } from '../../services/auth.service';
-import { Show } from '../../services/query-shows.service';
-import { BehaviorSubject, of } from 'rxjs';
-
-// Fake AuthService implementation
-class FakeAuthService {
-  private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
-  userProfile$ = this.userProfileSubject.asObservable();
-
-  setProfile(profile: UserProfile | null): void {
-    this.userProfileSubject.next(profile);
-  }
-
-  getCurrentProfile(): UserProfile | null {
-    return this.userProfileSubject.value;
-  }
-
-  removeShowFromWatchlist(show: Show): void {
-    const profile = this.userProfileSubject.value;
-    if (profile) {
-      profile.watchlist = profile.watchlist.filter(s => s.tconst !== show.tconst);
-      this.userProfileSubject.next(profile);
-    }
-  }
-
-  rateShow(show: Show, rating: number): void {
-    const profile = this.userProfileSubject.value;
-    if (profile) {
-      profile.ratings[show.tconst] = rating;
-      this.userProfileSubject.next(profile);
-    }
-  }
-
-  addComment(show: Show, comment: string): void {
-    const profile = this.userProfileSubject.value;
-    if (profile) {
-      profile.comments[show.tconst] = [comment];
-      this.userProfileSubject.next(profile);
-    }
-  }
-
-  isInWatchlist(show: Show): boolean {
-    const profile = this.userProfileSubject.value;
-    return profile ? profile.watchlist.some(s => s.tconst === show.tconst) : false;
-  }
-}
+import { ProfileService, WatchlistItem } from '../../services/profileService.service';import { ShowService, Show } from '../../services/query-shows.service';
+import { Router } from '@angular/router';
+import { MATERIAL_IMPORTS } from '../../material.imports';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 describe('WatchlistComponent', () => {
   let component: WatchlistComponent;
   let fixture: ComponentFixture<WatchlistComponent>;
-  let authService: FakeAuthService;
+  let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+  let showServiceSpy: jasmine.SpyObj<ShowService>;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
+  let router: Router;
 
-  // Dummy show for testing.
-  const dummyShow: Show = {
-    tconst: 'tt1234567',
-    title: 'Test Show',
-    rating: 7.5,
-    genre: 'Drama',
-    runtimeMinutes: 60,
-    userRating: undefined
+  const mockProfile = {
+    user: { id: 1, username: 'u' },
+    watchlist: [{ showID: 'good', status: 1 }] as WatchlistItem[],
+    ratings: [],
+    comments: []
   };
 
-  // Dummy profile with one show in the watchlist.
-  const dummyProfile: UserProfile = {
-    username: 'testuser',
-    password: 'testpass',
-    watchlist: [dummyShow],
-    ratings: { [dummyShow.tconst]: 7 },
-    comments: { [dummyShow.tconst]: ['Great show!'] }
+  const goodShow: Show = {
+    tconst: 'good',
+    title: 'Good Show',
+    rating: 5,
+    genre: 'Drama',
+    runtimeMinutes: 42
   };
 
   beforeEach(async () => {
+    // 1) stub out ProfileService.profile$
+    profileServiceSpy = jasmine.createSpyObj(
+      'ProfileService',
+      ['removeFromWatchlist', 'deleteRating', 'setRating', 'addComment', 'deleteComment'],
+      { profile$: of(mockProfile) }
+    );
+
+    // 2) stub out ShowService.getShowById
+    showServiceSpy = jasmine.createSpyObj('ShowService', ['getShowById']);
+    showServiceSpy.getShowById.and.callFake(id =>
+      id === 'good' ? of(goodShow) : throwError(() => new Error('404'))
+    );
+
+    // 3) stub out MatDialog (we don’t open any real dialogs in these tests)
+    dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, WatchlistComponent],
-      providers: [{ provide: AuthService, useClass: FakeAuthService }]
+      imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        NoopAnimationsModule,
+        MatDialogModule,
+        MatProgressSpinnerModule,
+        ...MATERIAL_IMPORTS,
+        NavbarComponent,
+        WatchlistComponent   // ← standalone component in imports, not declarations
+      ],
+      providers: [
+        { provide: ProfileService, useValue: profileServiceSpy },
+        { provide: ShowService,    useValue: showServiceSpy    },
+        { provide: MatDialog,      useValue: dialogSpy         }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(WatchlistComponent);
     component = fixture.componentInstance;
-    authService = TestBed.inject(AuthService) as unknown as FakeAuthService;
-    fixture.detectChanges();
+
+    // grab the Router from RouterTestingModule and spy on its navigate()
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
   });
 
-  it('should update the watchlist when a profile is set', fakeAsync(() => {
-    // Initially, the watchlist should be empty.
-    expect(component.watchlist.length).toBe(0);
-
-    // Set the profile using the fake auth service.
-    authService.setProfile(dummyProfile);
-    tick(); // Process the asynchronous emission
-    fixture.detectChanges();
-
-    // Now the watchlist should contain one show.
-    expect(component.watchlist.length).toBe(1);
-    expect(component.watchlist[0].title).toBe('Test Show');
+  it('should create', fakeAsync(() => {
+    fixture.detectChanges(); // ngOnInit()
+    tick();
+    expect(component).toBeTruthy();
   }));
+
+  it('should load shows and map to WatchlistShow', fakeAsync(() => {
+    fixture.detectChanges();
+    tick();
+
+    expect(component.watchlist).toEqual([
+      { tconst: 'good', title: 'Good Show', rating: 5 }
+    ]);
+    expect(component.isLoading).toBeFalse();
+  }));
+
+  it('goHome() should navigate to root', () => {
+    component.goHome();
+    expect(router.navigate).toHaveBeenCalledWith(['']);
+  });
+
+  it('openShowList() should navigate to shows', () => {
+    component.openShowList();
+    expect(router.navigate).toHaveBeenCalledWith(['shows']);
+  });
+
+  describe('removeShow()', () => {
+    beforeEach(fakeAsync(() => {
+      fixture.detectChanges();
+      tick();
+    }));
+
+    it('should call removeFromWatchlist when confirmed', () => {
+      spyOn(window, 'confirm').and.returnValue(true);
+      profileServiceSpy.removeFromWatchlist.and.returnValue(of(void 0));
+
+      component.removeShow({ tconst: 'good', title: 'Good Show', rating: 5 });
+      expect(window.confirm)
+        .toHaveBeenCalledWith('Remove "Good Show" from your watchlist?');
+      expect(profileServiceSpy.removeFromWatchlist).toHaveBeenCalledWith('good');
+    });
+
+    it('should not call removeFromWatchlist when canceled', () => {
+      spyOn(window, 'confirm').and.returnValue(false);
+
+      component.removeShow({ tconst: 'good', title: 'Good Show', rating: 5 });
+      expect(profileServiceSpy.removeFromWatchlist).not.toHaveBeenCalled();
+    });
+  });
 });
