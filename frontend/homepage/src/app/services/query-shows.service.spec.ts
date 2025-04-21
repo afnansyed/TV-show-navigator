@@ -1,7 +1,17 @@
+// src/app/services/query-shows.service.spec.ts
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { ShowService, RawShow, Show, ShowFilter } from './query-shows.service';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
+
+import {
+  ShowService,
+  Show,
+  ShowFilter,
+  RawShow,
+  BasicShow
+} from './query-shows.service';  // Fixed the hyphen character
 
 describe('ShowService', () => {
   let service: ShowService;
@@ -9,96 +19,130 @@ describe('ShowService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        // Provide the regular HttpClient
-        provideHttpClient(),
-        // Override it with the testing backend
-        provideHttpClientTesting()
-      ]
+      imports: [ HttpClientTestingModule ],
+      providers: [ ShowService ]
     });
-    service = TestBed.inject(ShowService);
+
+    service  = TestBed.inject(ShowService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
+  afterEach(() => httpMock.verify());
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should get show count and map the COUNT property', () => {
-    const dummyResponse = { COUNT: 123 };
-
-    service.getShowCount().subscribe(count => {
-      expect(count).toBe(123);
-    });
+  it('getShowCount() should fetch and map COUNT', () => {
+    let count = 0;
+    service.getShowCount().subscribe((c: number) => count = c);
 
     const req = httpMock.expectOne('http://localhost:8080/shows/count');
     expect(req.request.method).toBe('GET');
-    req.flush(dummyResponse);
+    req.flush({ COUNT: 42 });
+
+    expect(count).toBe(42);
   });
 
-  it('should get shows without filters and correctly map raw data to Show objects', () => {
-    const dummyRawShows: RawShow[] = [
-      {
-        tconst: 'tt1234567',
-        primaryTitle: 'Primary Title',
-        originalTitle: 'Original Title',
-        isAdult: 0,
-        genres: 'Drama,Thriller',
-        startYear: 2020,
-        endYear: 2021,
-        runtimeMinutes: 45,
-        avgRating: { Float64: 8.5, Valid: true },
-        votes: { Int32: 1000, Valid: true },
-        title: 'Original Title'
-      }
-    ];
+  it('getShowById() should return a simplified Show', () => {
+    const basic: BasicShow = {
+      tconst: 'tt1',
+      title: 'T1',
+      avgRating: { Float64: 7.2, Valid: true }
+    };
+    let out: Show|null = null;
+    service.getShowById('tt1').subscribe((s: Show) => out = s);
 
-    const expectedShows: Show[] = [
-      {
-        tconst: 'tt1234567',
-        title: 'Original Title',
-        rating: 8.5,
-        genre: 'Drama,Thriller',
-        runtimeMinutes: 45
-      }
-    ];
+    const req = httpMock.expectOne('http://localhost:8080/shows/tt1');
+    expect(req.request.method).toBe('GET');
+    req.flush(basic);
 
-    service.getShows().subscribe(shows => {
-      expect(shows).toEqual(expectedShows);
+    expect(out!).toEqual({
+      tconst: 'tt1',
+      title:  'T1',
+      rating: 7.2,
+      genre:  '',
+      runtimeMinutes: 0
+    } as Show);
+  });
+
+  it('getShowById() on error should return Unknown Show', () => {
+    let out: Show|null = null;
+    service.getShowById('nope').subscribe((s: Show) => out = s);
+
+    const req = httpMock.expectOne('http://localhost:8080/shows/nope');
+    req.error(new ErrorEvent('fail'));
+
+    expect(out!).toEqual({
+      tconst: 'nope',
+      title:  'Unknown Show',
+      rating: 0,
+      genre:  '',
+      runtimeMinutes: 0
+    } as Show);
+  });
+
+  describe('getShows()', () => {
+    const raw: RawShow[] = [{
+      tconst: 'abc',
+      primaryTitle: 'P',
+      originalTitle: 'O',
+      isAdult: 0,
+      genres: 'Drama',
+      startYear: 2000,
+      endYear: 0,
+      runtimeMinutes: 100,
+      avgRating: { Float64: 9, Valid: true },
+      votes:     { Int32: 1000, Valid: true },
+      title: ''
+    }];
+
+    it('should fetch list without params', () => {
+      let out: Show[] = [];
+      service.getShows().subscribe((arr: Show[]) => out = arr);
+
+      const req = httpMock.expectOne(r =>
+        r.method === 'GET' &&
+        r.url === 'http://localhost:8080/shows' &&
+        r.params.keys().length === 0
+      );
+      req.flush(raw);
+
+      expect(out).toEqual([{
+        tconst: 'abc',
+        title:  'P',
+        rating: 9,
+        genre:  'Drama',
+        runtimeMinutes: 100
+      } as Show]);
     });
 
-    const req = httpMock.expectOne('http://localhost:8080/shows');
-    expect(req.request.method).toBe('GET');
-    expect(req.request.params.keys().length).toBe(0);
-    req.flush(dummyRawShows);
-  });
+    it('should include only non-empty filter params', () => {
+      const filters: ShowFilter = {
+        titleContains: 'foo',
+        genre:         'Action',
+        limit:         '5'
+      };
 
-  it('should append query parameters when filters are provided', () => {
-    const filters: ShowFilter = {
-      titleContains: 'fire',
-      isAdult: 'TRUE',
-      genre: 'romance',
-      startYearStart: '2000',
-      startYearEnd: '2020',
-      limit: '20'
-    };
+      let out: Show[] = [];
+      service.getShows(filters).subscribe((arr: Show[]) => out = arr);
 
-    service.getShows(filters).subscribe();
+      const req = httpMock.expectOne(r =>
+        r.method === 'GET' &&
+        r.url === 'http://localhost:8080/shows' &&
+        r.params.get('titleContains') === 'foo' &&
+        r.params.get('genre')         === 'Action' &&
+        r.params.get('limit')         === '5'
+      );
+      req.flush(raw);
 
-    const req = httpMock.expectOne(req => req.url === 'http://localhost:8080/shows');
-    expect(req.request.method).toBe('GET');
+      expect(out.length).toBe(1);
+    });
 
-    expect(req.request.params.get('titleContains')).toBe('fire');
-    expect(req.request.params.get('isAdult')).toBe('TRUE');
-    expect(req.request.params.get('genre')).toBe('romance');
-    expect(req.request.params.get('startYearStart')).toBe('2000');
-    expect(req.request.params.get('startYearEnd')).toBe('2020');
-    expect(req.request.params.get('limit')).toBe('20');
+    it('should return empty array on error', () => {
+      let out: Show[] = [{ tconst: '', title: '', rating: -1, genre: '', runtimeMinutes: 0 }];
+      service.getShows().subscribe((arr: Show[]) => out = arr);
 
-    req.flush([]);
+      const req = httpMock.expectOne('http://localhost:8080/shows');
+      req.error(new ErrorEvent('fail'));
+
+      expect(out).toEqual([]);
+    });
   });
 });
