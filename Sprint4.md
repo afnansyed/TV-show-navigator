@@ -81,6 +81,48 @@ Instructions to run the project locally, see `README.md` in the root directory
     
 ### Backend:
 
+- Unit Tests:
+  
+  - addComment endpoint:
+    - Tests creating a new comment.
+    - Verifies that the comment is successfully added to the database with correct data (userID, showID, comment).
+    - Checks the response status code is 200 OK.
+      
+  - deleteComment endpoint:
+    - Tests deleting a comment by ID.
+    - Verifies that the comment is successfully removed from the database.
+    - Confirms the response contains the deleted comment's data.
+      
+  - addStatus endpoint:
+    - Tests adding a new watch status to a show.
+    - Verifies that the status is successfully added to the database with correct values.
+    - Checks the response status code is 200 OK.
+      
+  - deleteStatus endpoint:
+    - Tests deleting a watch status by userID and showID.
+    - Verifies that the status is successfully removed from the database.
+    - Confirms the response contains the deleted status data.
+      
+  - getWatchlist endpoint:
+    - Tests all 4 scenarios: getting a specific status, all statuses for a user, all statuses for a show, and all watchlists.
+    - Verifies that response contains the expected data structure in each scenario.
+    - Confirms proper data retrieval across multiple functions.
+      
+  - addRating endpoint:
+    - Tests adding a new rating to a show.
+    - Verifies that the rating is successfully added to the database with correct values.
+    - Checks the response status code is 200 OK.
+      
+  - deleteRating endpoint:
+    - Tests deleting a rating by userID and showID.
+    - Verifies that the rating is successfully removed from the database.
+    - Confirms the response contains the deleted rating data.
+      
+  - getRatings endpoint:
+    - Tests all scenarios: getting a specific rating, all ratings for a user, all ratings for a show.
+    - Verifies that responses contain the expected data structure for each scenario.
+    - Confirms error handling when neither userID nor showID is provided.
+
 ## API Documentation
 
 The path to the API documentation is [`backend/api-structure.md`](backend/api-structure.md)
