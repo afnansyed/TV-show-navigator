@@ -6,12 +6,16 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ### Development server
 
-To start a local development server, run:
+To start a local development server, go to /frontend/homepage and run:
 
 ```bash
 ng serve
 ```
 
+And on a seperate teminal, go to /backend and run:
+```bash
+go run api.go
+```
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. 
 
 ## Using Application
