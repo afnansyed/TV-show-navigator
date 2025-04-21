@@ -49,7 +49,7 @@ Instructions to run the project locally, see `README.md` in the root directory
 ## Testing
 ### Frontend:
 
-- Unit tests:
+- New unit tests:
   - sign up component:
       - Displays the correct prompt to sign in, if user does not have an account
       - Displays the 'Your TV Shows Navigator' logo
@@ -59,6 +59,7 @@ Instructions to run the project locally, see `README.md` in the root directory
       - Displays the 'Your TV Shows Navigator' logo
       - Navigates to sign-up page when "Sign up" link is clicked
 
+- All Unit Tests
    ![Screenshot 2025-04-21 125509](https://github.com/user-attachments/assets/58be2952-95c5-43c2-bc20-73b21f7f4b1e)
 
    
