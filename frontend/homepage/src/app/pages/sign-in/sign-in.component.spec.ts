@@ -8,7 +8,7 @@ import { MATERIAL_IMPORTS } from '../../material.imports';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 
 @Component({
@@ -29,6 +29,7 @@ describe('Sign in component unit test', () => {
         RouterTestingModule.withRoutes([
             { path: 'sign-up', component: SignUpPage }
         ]),
+        HttpClientTestingModule,
         SignInComponent,
         SignUpPage,
         NoopAnimationsModule,

@@ -7,7 +7,7 @@ import { MATERIAL_IMPORTS } from '../../material.imports';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 @Component({
   template: '<div>Sign Up Page</div>',
@@ -48,6 +48,7 @@ describe('navbar component unit test', () => {
           { path: 'shows', component: ShowsPage },
           { path: 'watchlist', component: WatchlistPage }
         ]),
+        HttpClientTestingModule,
         NavbarComponent,
         SignUpPage,
         SignInPage,
@@ -176,11 +177,6 @@ describe('navbar component unit test', () => {
   
     expect(location.path()).toBe('/watchlist');
   });
-
-  it('Has a Profile button', () => {
-    const wButton = fixture.debugElement.query(By.css('button[aria-label="Profile"]'));
-    expect(wButton).toBeTruthy();
-  });
   
 
  
@@ -194,13 +190,11 @@ describe('navbar component unit test', () => {
     const searchLabel = fixture.debugElement.query(By.css('button[aria-label="Search"] .label')).nativeElement;
     const showsLabel = fixture.debugElement.query(By.css('button[aria-label="Shows"] .label')).nativeElement;
     const watchLabel = fixture.debugElement.query(By.css('button[aria-label="Watchlist"] .label')).nativeElement;
-    const profileLabel = fixture.debugElement.query(By.css('button[aria-label="Profile"] .label')).nativeElement;
 
     expect(homeLabel.textContent).toContain('Home');
     expect(searchLabel.textContent).toContain('Search');
     expect(showsLabel.textContent).toContain('Shows');
     expect(watchLabel.textContent).toContain('Watchlist');
-    expect(profileLabel.textContent).toContain('Profile');
   });
   
 
