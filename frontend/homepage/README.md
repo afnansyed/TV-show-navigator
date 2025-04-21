@@ -1,8 +1,10 @@
-# FrontpagePrototype
+# Frontend
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.4.
 
-## Development server
+## Running Application
+
+### Development server
 
 To start a local development server, run:
 
@@ -10,7 +12,18 @@ To start a local development server, run:
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. 
+
+## Using Application
+
+The user is first navigated to the homepage.
+
+![Image](https://github.com/user-attachments/assets/75a92905-d1d7-4753-ae6b-2e4119e2f400)
+
+They can look through the navigation bar to see which page they would like to go to. They can browse through the list of shows in the tv shows list page. They have to have an account and be logged in to use the watchlist, rating, and commenting feature. To sign up or sign in, user can navigate to the page through the navigation bar floating at the side.
+
+![Image](https://github.com/user-attachments/assets/765c0e28-7986-40e3-90df-dcb9f6539960)
+
 
 ## Code scaffolding
 
@@ -52,9 +65,12 @@ npx cypress open
 ```
 Test run in google chrome.
 
-Currently, 1 test which is testing the fuctionality of the 'Get Started' button on homepage.
+(test 1) (Updated from previous cypress test due to changes in UI): Shows Button Navigation Test
 
-![get-started-cypress-test](https://github.com/user-attachments/assets/f4e5c626-8a7a-402a-88be-d852666fa119)
+![Image](https://github.com/user-attachments/assets/3495ced0-009f-4893-bdff-061c0fce6e79)
+
+(test 2): Watchlist Button Navigation Test
+![Image](https://github.com/user-attachments/assets/e3ef4fba-0bbf-4a24-8352-6ad82e7f4155)
 
 ## Additional Resources
 
