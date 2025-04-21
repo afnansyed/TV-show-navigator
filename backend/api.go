@@ -13,13 +13,6 @@ import (
 var db *sql.DB
 
 func main() {
-	var err error
-	db, err = sql.Open("sqlite3", "shows.db")
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
 	router := gin.Default()
 
 	//trust all proxies
